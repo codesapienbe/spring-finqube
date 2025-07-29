@@ -1,0 +1,13 @@
+  ____    _             _       _        _
+ / ___|  / \   _ __ ___| |__   | |_ __ _| |_ ___
+ \___ \ / _ \ | '__/ __| '_ \  | __/ _` | __/ _ \
+  ___) / ___ \| | | (__| | | | | || (_| | ||  __/
+ |____/_/   \_\_|  \___|_| |_|  \__\__,_|\__\___|
+
+ :: Spring Finqube ISO 20022 Starter ::        (v0.1.0-SNAPSHOT)
+ :: Financial Messaging Made Simple ::         (https://github.com/finqube/spring-finqube)
+
+🚀 Ready to process ISO 20022 financial messages
+💳 Supporting pain, pacs, and camt message types
+🔒 Enterprise-grade security and validation
+📊 Built-in monitoring and metrics

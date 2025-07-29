@@ -75,11 +75,37 @@ public class PaymentController {
             String messageId = iso20022Template.sendMessage(pain001);
             
             return ResponseEntity.ok("Payment sent with ID: " + messageId);
-        } catch (Iso20022Exception e) {
+        } catch (MessageValidationException e) {
             return ResponseEntity.badRequest().body("Payment failed: " + e.getMessage());
         }
     }
 }
+```
+
+### API Reference
+
+#### Iso20022Template
+
+The main facade for ISO 20022 message processing.
+
+**Methods:**
+
+- `sendMessage(String xml)` - Send an ISO 20022 message as XML string
+- `send(BaseMessage message)` - Send an ISO 20022 message object
+- `getTemplateId()` - Get the unique template identifier
+
+**Example:**
+
+```java
+@Autowired
+private Iso20022Template iso20022Template;
+
+// Send XML message
+String messageId = iso20022Template.sendMessage(xmlContent);
+
+// Send BaseMessage object
+Pain001Message pain001 = new Pain001Message("MSG001", instructions, 1, 1000.00);
+String messageId = iso20022Template.send(pain001);
 ```
 
 ## 📋 Features

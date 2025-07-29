@@ -1,0 +1,92 @@
+---
+description:
+globs:
+alwaysApply: true
+---
+# Cursor IDE Coding & Project Rules for `spring-finqube`
+
+## 1. General Style & Seniority
+
+- **Maturity:** All code must reflect the conventions and quality expected from a senior Spring/Java engineer.
+- **Clarity First:** Favor long, expressive identifiers over abbreviations or cleverness.
+- **No Magic:** Avoid hidden behaviors or “surprising” code paths; prefer explicit configuration and conventions.
+
+## 2. Documentation & Code Comments
+
+- **Every class and public/protected method must begin with a Javadoc block.**
+  - Purpose, usage example (if relevant), and any non-trivial side effects.
+- **All parameter types, return values, and checked exceptions must be documented.**
+- For private methods or non-obvious logic, inline comments should clarify intent and edge cases.
+- **TODOs must always include a rationale and author.**
+- Use ASCII diagrams in docs to explain structure or data flow when it aids understanding.
+
+## 3. Naming Conventions
+
+- **Classes & Interfaces:** Nouns, PascalCase, always domain-relevant (e.g. `PaymentBatchProcessor`, `SwiftNetTransport`).
+- **Methods:** Verbs, camelCase, naturally reads as an action or query (e.g. `sendPayment`, `findMessagesByStatus`).
+- **Variables:** Expressive, domain-focused, avoid generic names (`batchList` over `bl`; `iso20022Message` over `msg`).
+- **Constants:** UPPER_SNAKE_CASE, with clear meaning.
+- **Abbreviations:** Only industry-standard ones (e.g. `RMA`, `AMH`).
+
+## 4. Modern Java Practices (JDK 17+)
+
+- **Always use Java language features up to the current LTS (17 or 21):**
+  - Use **records** for immutable data carriers (DTOs, configs).
+  - Use **sealed interfaces** to restrict inheritance where it clarifies the domain.
+  - Favor **pattern matching** and **instanceof** refinements for readability.
+  - **Prefer switch expressions** and **text blocks** for clarity in multi-line constructs.
+- **Concurrency:**
+  - Use **Virtual Threads (Project Loom)** for I/O-bound or massively concurrent tasks, especially in integrations.
+  - Avoid legacy Thread pools unless justified by blocking operations not suited to virtual threads.
+- **Collections:**
+  - Use `List.of`, `Set.of`, `Map.of` for small immutable collections.
+  - Use Streams sparingly—prioritize readability over one-liners.
+
+## 5. Architecture & Code Organization
+
+- **SOLID Principles:**
+  - Every module, class, and method must serve a single, focused purpose; dependency inversion prevails.
+  - Build abstractions only when multiple implementations are anticipated or required.
+- **KISS (Keep It Simple, Stupid):**
+  - Avoid over-architecting; solve today’s problem with a path to scale.
+  - Prefer composition over inheritance unless the domain model demands it.
+- **Package Structure:**
+  - Group by domain, not technical layer.
+  - Each package must contain a `package-info.java` with overview documentation.
+- **Public API:**
+  - Reveal as little mutable state as possible.
+  - All public endpoints must be idempotent unless explicitly marked otherwise.
+
+## 6. Test Coverage & Quality
+
+- **All public methods and major branches must have corresponding unit and integration tests.**
+- **Use modern JUnit 5, Testcontainers for integration/environment tests.**
+- Each test must document the "why" (not just the "what").
+- Maintain 80%+ code coverage, with exceptions for getter/setter boilerplate or clearly documented generated code.
+
+## 7. Linting, Formatting & Static Checks
+
+- **Spotless** and **Checkstyle** must run on every commit/push; errors block merges.
+- **SonarQube** or similar should check for code smells, cognitive complexity, and security vulnerabilities as part of CI.
+
+## 8. Continuous Improvement
+
+- All contributors must update class/method JavaDocs when modifying behaviors.
+- Refactoring is welcome, but must not cross architectural boundaries without an explicit design note in the PR.
+- The tech lead (or you, as project owner) reserves veto on changes that reduce readability or architectural coherence.
+
+## 9. AI/CoPilot/Cursor Integration
+
+- Any code suggested or inserted by AI must be:
+  - Reviewed against these rules before finalizing.
+  - Not accepted if it adds cryptic, non-idiomatic, or overcomplicated code paths.
+  - Only merged if both the **code** and the **comments** pass the above standards.
+
+**Paste these rules into your repo’s**
+- `CURSOR_IDE_RULES.md` (for Cursor),
+- Reference in `CONTRIBUTING.md`,
+- And as a starting-point template in `.editorconfig` and `checkstyle.xml`.
+
+
+
+

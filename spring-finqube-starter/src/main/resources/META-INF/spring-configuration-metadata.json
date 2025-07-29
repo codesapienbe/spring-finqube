@@ -1,0 +1,204 @@
+{
+  "groups": [
+    {
+      "name": "iso20022",
+      "type": "com.finqube.iso20022.autoconfigure.properties.SpringFinqubeProperties",
+      "sourceType": "com.finqube.iso20022.autoconfigure.properties.SpringFinqubeProperties",
+      "description": "ISO 20022 financial messaging configuration properties."
+    }
+  ],
+  "properties": [
+    {
+      "name": "iso20022.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether ISO 20022 functionality is enabled.",
+      "sourceType": "com.finqube.iso20022.autoconfigure.properties.SpringFinqubeProperties",
+      "defaultValue": true
+    },
+    {
+      "name": "iso20022.transport",
+      "type": "java.lang.String",
+      "description": "Transport protocol to use for message transmission.",
+      "sourceType": "com.finqube.iso20022.autoconfigure.properties.SpringFinqubeProperties",
+      "defaultValue": "none"
+    },
+    {
+      "name": "iso20022.validation.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether message validation is enabled.",
+      "sourceType": "com.finqube.iso20022.autoconfigure.properties.SpringFinqubeProperties$Validation",
+      "defaultValue": true
+    },
+    {
+      "name": "iso20022.validation.fail-fast",
+      "type": "java.lang.Boolean",
+      "description": "Whether to fail fast on validation errors.",
+      "sourceType": "com.finqube.iso20022.autoconfigure.properties.SpringFinqubeProperties$Validation",
+      "defaultValue": true
+    },
+    {
+      "name": "iso20022.security.keystore.location",
+      "type": "java.lang.String",
+      "description": "Keystore file location.",
+      "sourceType": "com.finqube.iso20022.autoconfigure.properties.SpringFinqubeProperties$Security$Keystore"
+    },
+    {
+      "name": "iso20022.security.keystore.password",
+      "type": "java.lang.String",
+      "description": "Keystore password.",
+      "sourceType": "com.finqube.iso20022.autoconfigure.properties.SpringFinqubeProperties$Security$Keystore"
+    },
+    {
+      "name": "iso20022.security.keystore.type",
+      "type": "java.lang.String",
+      "description": "Keystore type.",
+      "sourceType": "com.finqube.iso20022.autoconfigure.properties.SpringFinqubeProperties$Security$Keystore",
+      "defaultValue": "PKCS12"
+    },
+    {
+      "name": "iso20022.transport-config.connection-timeout",
+      "type": "java.lang.Integer",
+      "description": "Connection timeout in milliseconds.",
+      "sourceType": "com.finqube.iso20022.autoconfigure.properties.SpringFinqubeProperties$Transport",
+      "defaultValue": 30000
+    },
+    {
+      "name": "iso20022.transport-config.read-timeout",
+      "type": "java.lang.Integer",
+      "description": "Read timeout in milliseconds.",
+      "sourceType": "com.finqube.iso20022.autoconfigure.properties.SpringFinqubeProperties$Transport",
+      "defaultValue": 60000
+    },
+    {
+      "name": "iso20022.transport-config.max-retries",
+      "type": "java.lang.Integer",
+      "description": "Maximum number of retry attempts.",
+      "sourceType": "com.finqube.iso20022.autoconfigure.properties.SpringFinqubeProperties$Transport",
+      "defaultValue": 3
+    },
+    {
+      "name": "iso20022.transport-config.retry-delay",
+      "type": "java.lang.Integer",
+      "description": "Retry delay in milliseconds.",
+      "sourceType": "com.finqube.iso20022.autoconfigure.properties.SpringFinqubeProperties$Transport",
+      "defaultValue": 1000
+    },
+    {
+      "name": "iso20022.transport-config.connection-pooling",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable connection pooling.",
+      "sourceType": "com.finqube.iso20022.autoconfigure.properties.SpringFinqubeProperties$Transport",
+      "defaultValue": true
+    },
+    {
+      "name": "iso20022.transport-config.max-connections",
+      "type": "java.lang.Integer",
+      "description": "Maximum number of connections in pool.",
+      "sourceType": "com.finqube.iso20022.autoconfigure.properties.SpringFinqubeProperties$Transport",
+      "defaultValue": 10
+    },
+    {
+      "name": "iso20022.monitoring.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable metrics collection.",
+      "sourceType": "com.finqube.iso20022.autoconfigure.properties.SpringFinqubeProperties$Monitoring",
+      "defaultValue": true
+    },
+    {
+      "name": "iso20022.monitoring.collection-interval",
+      "type": "java.lang.Integer",
+      "description": "Metrics collection interval in seconds.",
+      "sourceType": "com.finqube.iso20022.autoconfigure.properties.SpringFinqubeProperties$Monitoring",
+      "defaultValue": 60
+    },
+    {
+      "name": "iso20022.monitoring.health-checks",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable health checks.",
+      "sourceType": "com.finqube.iso20022.autoconfigure.properties.SpringFinqubeProperties$Monitoring",
+      "defaultValue": true
+    },
+    {
+      "name": "iso20022.logging.level",
+      "type": "java.lang.String",
+      "description": "Log level for ISO 20022 operations.",
+      "sourceType": "com.finqube.iso20022.autoconfigure.properties.SpringFinqubeProperties$Logging",
+      "defaultValue": "INFO"
+    },
+    {
+      "name": "iso20022.logging.log-message-content",
+      "type": "java.lang.Boolean",
+      "description": "Whether to log message content.",
+      "sourceType": "com.finqube.iso20022.autoconfigure.properties.SpringFinqubeProperties$Logging",
+      "defaultValue": false
+    },
+    {
+      "name": "iso20022.logging.log-sensitive-data",
+      "type": "java.lang.Boolean",
+      "description": "Whether to log sensitive data.",
+      "sourceType": "com.finqube.iso20022.autoconfigure.properties.SpringFinqubeProperties$Logging",
+      "defaultValue": false
+    }
+  ],
+  "hints": [
+    {
+      "name": "iso20022.transport",
+      "values": [
+        {
+          "value": "none",
+          "description": "No transport (for testing only)."
+        },
+        {
+          "value": "swiftnet",
+          "description": "SWIFT Network transport."
+        },
+        {
+          "value": "amh",
+          "description": "AMH (Application Message Handler) transport."
+        }
+      ]
+    },
+    {
+      "name": "iso20022.security.keystore.type",
+      "values": [
+        {
+          "value": "PKCS12",
+          "description": "PKCS#12 keystore format."
+        },
+        {
+          "value": "JKS",
+          "description": "Java KeyStore format."
+        },
+        {
+          "value": "JCEKS",
+          "description": "Java Cryptography Extension KeyStore format."
+        }
+      ]
+    },
+    {
+      "name": "iso20022.logging.level",
+      "values": [
+        {
+          "value": "TRACE",
+          "description": "Trace level logging for detailed debugging."
+        },
+        {
+          "value": "DEBUG",
+          "description": "Debug level logging for development."
+        },
+        {
+          "value": "INFO",
+          "description": "Info level logging for general information."
+        },
+        {
+          "value": "WARN",
+          "description": "Warning level logging for concerning events."
+        },
+        {
+          "value": "ERROR",
+          "description": "Error level logging for errors."
+        }
+      ]
+    }
+  ]
+}
