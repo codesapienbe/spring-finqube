@@ -111,12 +111,14 @@ String messageId = iso20022Template.send(pain001);
 ## 📋 Features
 
 ### ✅ Implemented
+
 - [x] Multi-module Maven project structure
 - [x] Spring Boot 3.2.0 integration
 - [x] Java 21 support
 - [x] Basic project scaffolding
 
 ### 🚧 In Progress
+
 - [ ] Core ISO 20022 models (JAXB generation)
 - [ ] Spring Boot autoconfiguration
 - [ ] Iso20022Template facade
@@ -124,6 +126,7 @@ String messageId = iso20022Template.send(pain001);
 - [ ] Message validation pipeline
 
 ### 📅 Planned
+
 - [ ] Pluggable transport SPI
 - [ ] Security hooks and PKI integration
 - [ ] Monitoring and metrics
@@ -212,10 +215,10 @@ This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENS
 
 ## 📞 Support
 
-- 📧 Email: support@finqube.com
-- 💬 Discussions: [GitHub Discussions](https://github.com/finqube/spring-finqube/discussions)
-- 🐛 Issues: [GitHub Issues](https://github.com/finqube/spring-finqube/issues)
+- 📧 Email: <support@codesapien.net>
+- 💬 Discussions: [GitHub Discussions](https://github.com/codesapienbe/spring-finqube/discussions)
+- 🐛 Issues: [GitHub Issues](https://github.com/codesapienbe/spring-finqube/issues)
 
 ---
 
-**Made with ❤️ for the financial technology community** 
+**Made with ❤️ for the financial technology community**
