@@ -15,7 +15,6 @@ import org.slf4j.LoggerFactory;
 
 import com.finqube.iso20022.core.message.BaseMessage;
 import com.finqube.iso20022.core.message.MessagePriority;
-import com.finqube.iso20022.core.message.pain.Pain001Message;
 import com.finqube.iso20022.core.translation.CacheStatistics;
 import com.finqube.iso20022.core.translation.TranslationException;
 import com.finqube.iso20022.core.translation.TranslationFormat;
@@ -133,7 +132,7 @@ public class DefaultTranslationManager implements TranslationManager {
             }
 
             TranslationResult result = TranslationResult.success(translationId, sourceMessage, translatedMessage,
-                sourceFormat, targetFormat, endTime, translationTime, metadata, warnings);
+                sourceFormat, targetFormat, endTime, translationTime, metadata);
 
             // Cache result if enabled
             if (options.isCachingEnabled()) {
@@ -306,55 +305,68 @@ public class DefaultTranslationManager implements TranslationManager {
     }
 
     private BaseMessage createTranslatedMessage(BaseMessage sourceMessage, String targetFormat) {
-        // Simulate message transformation based on target format
-        if (targetFormat.startsWith("MX")) {
-            return new Pain001Message(sourceMessage.getMessageId() + "-translated",
-                sourceMessage.getTransactions(), sourceMessage.getTransactionCount(), sourceMessage.getTotalAmount()) {
-                @Override
-                public String getMessageType() {
-                    return targetFormat.toLowerCase();
-                }
+        // Create a simple mock message for translation testing
+        return new BaseMessage() {
+            @Override
+            public String getMessageId() {
+                return sourceMessage.getMessageId() + "-translated";
+            }
 
-                @Override
-                public String getBusinessProcess() {
-                    return "pain";
-                }
+            @Override
+            public java.time.LocalDateTime getCreationTime() {
+                return java.time.LocalDateTime.now();
+            }
 
-                @Override
-                public MessagePriority getPriority() {
-                    return sourceMessage.getPriority();
-                }
+            @Override
+            public String getMessageType() {
+                return targetFormat.toLowerCase();
+            }
 
-                @Override
-                public String getDescription() {
-                    return "Translated " + sourceMessage.getDescription();
-                }
-            };
-        } else {
-            // For other formats, create a simple transformed message
-            return new Pain001Message(sourceMessage.getMessageId() + "-translated",
-                sourceMessage.getTransactions(), sourceMessage.getTransactionCount(), sourceMessage.getTotalAmount()) {
-                @Override
-                public String getMessageType() {
-                    return "translated";
-                }
+            @Override
+            public String getBusinessProcess() {
+                return targetFormat.startsWith("MX") ? "pain" : "translation";
+            }
 
-                @Override
-                public String getBusinessProcess() {
-                    return "translation";
-                }
+            @Override
+            public boolean validate() throws com.finqube.iso20022.core.exception.MessageValidationException {
+                return true;
+            }
 
-                @Override
-                public MessagePriority getPriority() {
-                    return sourceMessage.getPriority();
-                }
+            @Override
+            public String getDescription() {
+                return "Translated " + sourceMessage.getDescription();
+            }
 
-                @Override
-                public String getDescription() {
-                    return "Translated " + sourceMessage.getDescription();
-                }
-            };
-        }
+            @Override
+            public boolean requiresAcknowledgment() {
+                return sourceMessage.requiresAcknowledgment();
+            }
+
+            @Override
+            public MessagePriority getPriority() {
+                return sourceMessage.getPriority();
+            }
+
+            @Override
+            public String getSchemaVersion() {
+                return "1.0";
+            }
+
+            @Override
+            public java.util.List<String> getTransactions() {
+                return sourceMessage.getTransactions();
+            }
+
+            @Override
+            public int getTransactionCount() {
+                return sourceMessage.getTransactionCount();
+            }
+
+            @Override
+            public double getTotalAmount() {
+                return sourceMessage.getTotalAmount();
+            }
+        };
     }
 
     private void validateTranslation(BaseMessage sourceMessage, BaseMessage translatedMessage, String sourceFormat, String targetFormat) {

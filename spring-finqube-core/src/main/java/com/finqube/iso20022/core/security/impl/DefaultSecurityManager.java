@@ -12,12 +12,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.finqube.iso20022.core.message.BaseMessage;
+import com.finqube.iso20022.core.message.MessagePriority;
 import com.finqube.iso20022.core.security.EncryptedMessage;
 import com.finqube.iso20022.core.security.SecureMessage;
 import com.finqube.iso20022.core.security.SecureMessageResult;
 import com.finqube.iso20022.core.security.SecurityException;
 import com.finqube.iso20022.core.security.SecurityHealthCheck;
-import com.finqube.iso20022.core.security.SecurityManager;
 import com.finqube.iso20022.core.security.SecurityStatistics;
 import com.finqube.iso20022.core.security.SignatureVerificationResult;
 import com.finqube.iso20022.core.security.SignedMessage;
@@ -33,7 +33,7 @@ import com.finqube.iso20022.core.security.SignedMessage;
  * @version 0.1.0
  * @since 0.1.0
  */
-public class DefaultSecurityManager implements SecurityManager {
+public class DefaultSecurityManager implements com.finqube.iso20022.core.security.SecurityManager {
 
     private static final Logger logger = LoggerFactory.getLogger(DefaultSecurityManager.class);
 
@@ -56,6 +56,83 @@ public class DefaultSecurityManager implements SecurityManager {
         this.statistics = new SecurityStatistics(securityManagerId, Instant.now(), operationTypeCounts, errorTypeCounts);
 
         logger.info("DefaultSecurityManager initialized");
+    }
+
+    /**
+     * Mock message implementation for testing purposes.
+     */
+    private static class MockMessage implements BaseMessage {
+        private final String messageId;
+        private final String messageType;
+        private final String businessProcess;
+        private final String description;
+
+        public MockMessage(String messageId, String messageType, String businessProcess, String description) {
+            this.messageId = messageId;
+            this.messageType = messageType;
+            this.businessProcess = businessProcess;
+            this.description = description;
+        }
+
+        @Override
+        public String getMessageId() {
+            return messageId;
+        }
+
+        @Override
+        public java.time.LocalDateTime getCreationTime() {
+            return java.time.LocalDateTime.now();
+        }
+
+        @Override
+        public String getMessageType() {
+            return messageType;
+        }
+
+        @Override
+        public String getBusinessProcess() {
+            return businessProcess;
+        }
+
+        @Override
+        public boolean validate() throws com.finqube.iso20022.core.exception.MessageValidationException {
+            return true;
+        }
+
+        @Override
+        public String getDescription() {
+            return description;
+        }
+
+        @Override
+        public boolean requiresAcknowledgment() {
+            return false;
+        }
+
+        @Override
+        public MessagePriority getPriority() {
+            return MessagePriority.NORMAL;
+        }
+
+        @Override
+        public String getSchemaVersion() {
+            return "1.0";
+        }
+
+        @Override
+        public java.util.List<String> getTransactions() {
+            return java.util.List.of();
+        }
+
+        @Override
+        public int getTransactionCount() {
+            return 0;
+        }
+
+        @Override
+        public double getTotalAmount() {
+            return 0.0;
+        }
     }
 
     @Override
@@ -212,22 +289,7 @@ public class DefaultSecurityManager implements SecurityManager {
             statistics.recordSuccess("DECRYPT", processingTime);
 
             // Return a mock message for testing
-            BaseMessage decryptedMessage = new BaseMessage(messageId, null, 0, 0.0) {
-                @Override
-                public String getMessageType() {
-                    return "decrypted";
-                }
-
-                @Override
-                public String getBusinessProcess() {
-                    return "decrypted";
-                }
-
-                @Override
-                public String getDescription() {
-                    return "Decrypted message";
-                }
-            };
+            BaseMessage decryptedMessage = new MockMessage(messageId, "decrypted", "decrypted", "Decrypted message");
 
             logger.debug("Message decrypted successfully: {}", messageId);
             return decryptedMessage;
@@ -323,22 +385,7 @@ public class DefaultSecurityManager implements SecurityManager {
                 messageId, secureMessage.getSignerCertificate(), secureMessage.getSignatureAlgorithm(), endTime);
 
             // Create decrypted message
-            BaseMessage decryptedMessage = new BaseMessage(messageId, null, 0, 0.0) {
-                @Override
-                public String getMessageType() {
-                    return "secure";
-                }
-
-                @Override
-                public String getBusinessProcess() {
-                    return "secure";
-                }
-
-                @Override
-                public String getDescription() {
-                    return "Secure message";
-                }
-            };
+            BaseMessage decryptedMessage = new MockMessage(messageId, "secure", "secure", "Secure message");
 
             logger.debug("Message verified and decrypted successfully: {}", messageId);
             return SecureMessageResult.success(messageId, decryptedMessage, verificationResult, endTime);

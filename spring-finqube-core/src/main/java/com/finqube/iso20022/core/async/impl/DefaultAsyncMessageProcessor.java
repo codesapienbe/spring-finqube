@@ -15,14 +15,14 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.finqube.iso20022.core.message.BaseMessage;
-import com.finqube.iso20022.core.template.Iso20022Template;
-import com.finqube.iso20022.core.transport.TransportFactory;
-import com.finqube.iso20022.core.validation.MessageValidator;
 import com.finqube.iso20022.core.async.AsyncMessageProcessor;
 import com.finqube.iso20022.core.async.ProcessingHealthCheck;
 import com.finqube.iso20022.core.async.ProcessingResult;
 import com.finqube.iso20022.core.async.ProcessingStatistics;
+import com.finqube.iso20022.core.message.BaseMessage;
+import com.finqube.iso20022.core.template.Iso20022Template;
+import com.finqube.iso20022.core.transport.TransportFactory;
+import com.finqube.iso20022.core.validation.MessageValidator;
 
 /**
  * Default implementation of AsyncMessageProcessor.
@@ -331,24 +331,24 @@ public class DefaultAsyncMessageProcessor implements AsyncMessageProcessor {
             }
 
             // Step 2: Process message using template
-            var transportResponse = template.sendMessage(message);
+            var messageIdResult = template.send(message);
 
-            // Step 3: Check transport result
-            if (transportResponse.isSuccessful()) {
+            // Step 3: Check result
+            if (messageIdResult != null && !messageIdResult.isEmpty()) {
                 long processingTime = Instant.now().toEpochMilli() - submittedAt.toEpochMilli();
                 statistics.recordSuccess(processingTime);
 
                 Map<String, Object> metadata = new HashMap<>();
-                metadata.put("transport", transportResponse.getStatus());
+                metadata.put("templateId", template.getTemplateId());
                 metadata.put("processingTime", processingTime);
 
                 logger.debug("Message processed successfully: {}", messageId);
                 return ProcessingResult.success(messageId, submittedAt, Instant.now(), metadata);
             } else {
-                String errorMsg = "Transport failed: " + transportResponse.getResponseMessage();
+                String errorMsg = "Template processing failed";
                 logger.warn("{} - {}", errorMsg, messageId);
                 long processingTime = Instant.now().toEpochMilli() - submittedAt.toEpochMilli();
-                statistics.recordFailure(processingTime, "TRANSPORT_ERROR");
+                statistics.recordFailure(processingTime, "TEMPLATE_ERROR");
                 return ProcessingResult.failure(messageId, errorMsg, submittedAt, Instant.now());
             }
 
@@ -365,36 +365,26 @@ public class DefaultAsyncMessageProcessor implements AsyncMessageProcessor {
         logger.debug("Processing XML content: {}", messageId);
 
         try {
-            // Step 1: Validate XML
-            var validationResult = validator.validateXml(xmlContent);
-            if (!validationResult.isValid()) {
-                String errorMsg = "XML validation failed: " + validationResult.getErrors().size() + " errors";
-                logger.warn("{} - {}", errorMsg, messageId);
-                long processingTime = Instant.now().toEpochMilli() - submittedAt.toEpochMilli();
-                statistics.recordFailure(processingTime, "XML_VALIDATION_ERROR");
-                return ProcessingResult.failure(messageId, errorMsg, submittedAt, Instant.now());
-            }
+            // Step 1: Send XML using template (validation happens inside template)
+            var messageIdResult = template.sendMessage(xmlContent);
 
-            // Step 2: Send XML using template
-            var transportResponse = template.sendXml(xmlContent);
-
-            // Step 3: Check transport result
-            if (transportResponse.isSuccessful()) {
+            // Step 2: Check result
+            if (messageIdResult != null && !messageIdResult.isEmpty()) {
                 long processingTime = Instant.now().toEpochMilli() - submittedAt.toEpochMilli();
                 statistics.recordSuccess(processingTime);
 
                 Map<String, Object> metadata = new HashMap<>();
-                metadata.put("transport", transportResponse.getStatus());
+                metadata.put("templateId", template.getTemplateId());
                 metadata.put("processingTime", processingTime);
                 metadata.put("contentType", "xml");
 
                 logger.debug("XML content processed successfully: {}", messageId);
                 return ProcessingResult.success(messageId, submittedAt, Instant.now(), metadata);
             } else {
-                String errorMsg = "Transport failed: " + transportResponse.getResponseMessage();
+                String errorMsg = "Template processing failed";
                 logger.warn("{} - {}", errorMsg, messageId);
                 long processingTime = Instant.now().toEpochMilli() - submittedAt.toEpochMilli();
-                statistics.recordFailure(processingTime, "TRANSPORT_ERROR");
+                statistics.recordFailure(processingTime, "TEMPLATE_ERROR");
                 return ProcessingResult.failure(messageId, errorMsg, submittedAt, Instant.now());
             }
 

@@ -3,24 +3,25 @@ package com.finqube.iso20022.core.message.pain;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.finqube.iso20022.core.exception.MessageValidationException;
-import com.finqube.iso20022.core.exception.MessageValidationException.ValidationError;
 import com.finqube.iso20022.core.message.BaseMessage;
 import com.finqube.iso20022.core.message.MessagePriority;
+import com.finqube.iso20022.core.validation.ValidationError;
 
 /**
- * Customer Credit Transfer Initiation (pain.001) message.
+ * Implementation of ISO 20022 pain.001.001.11 message (Customer Credit Transfer Initiation).
  *
- * <p>This message is used by customers to initiate credit transfers to their banks.
- * It supports both single and bulk payment instructions.</p>
+ * <p>This class represents a pain.001 message used for initiating customer credit transfers.
+ * It contains payment instructions with details about the transfer amounts, accounts, and purposes.</p>
  *
  * <p>Key features:</p>
  * <ul>
- *   <li>Single or multiple payment instructions</li>
- *   <li>Support for various payment types (SEPA, domestic, international)</li>
- *   <li>Detailed party information (debtor and creditor)</li>
- *   <li>Payment purpose and remittance information</li>
+ *   <li>Payment instruction management</li>
+ *   <li>Transaction counting and control sum validation</li>
+ *   <li>Comprehensive validation rules</li>
+ *   <li>ISO 20022 schema compliance</li>
  * </ul>
  *
  * @author Finqube Team
@@ -126,11 +127,28 @@ public class Pain001Message implements BaseMessage {
     }
 
     /**
-     * Gets the control sum of all payment amounts.
+     * Gets the control sum of all amounts in this message.
      *
      * @return the control sum
      */
     public double getControlSum() {
+        return controlSum;
+    }
+
+    @Override
+    public List<String> getTransactions() {
+        return paymentInstructions.stream()
+                .map(PaymentInstruction::getInstructionId)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public int getTransactionCount() {
+        return numberOfTransactions;
+    }
+
+    @Override
+    public double getTotalAmount() {
         return controlSum;
     }
 
@@ -140,29 +158,28 @@ public class Pain001Message implements BaseMessage {
 
         // Validate message ID
         if (messageId == null || messageId.trim().isEmpty()) {
-            errors.add(new ValidationError("messageId", "REQUIRED",
-                "Message ID is required", "ERROR"));
+            errors.add(new ValidationError("REQUIRED", "Message ID is required",
+                ValidationError.ErrorSeverity.ERROR, null, "messageId", messageId, "Pain001Message"));
         }
 
         // Validate payment instructions
         if (paymentInstructions == null || paymentInstructions.isEmpty()) {
-            errors.add(new ValidationError("paymentInstructions", "REQUIRED",
-                "At least one payment instruction is required", "ERROR"));
+            errors.add(new ValidationError("REQUIRED", "At least one payment instruction is required",
+                ValidationError.ErrorSeverity.ERROR, null, "paymentInstructions", null, "Pain001Message"));
         } else {
             // Validate each payment instruction
             for (int i = 0; i < paymentInstructions.size(); i++) {
                 PaymentInstruction instruction = paymentInstructions.get(i);
                 if (instruction == null) {
-                    errors.add(new ValidationError("paymentInstructions[" + i + "]", "REQUIRED",
-                        "Payment instruction cannot be null", "ERROR"));
+                    errors.add(new ValidationError("REQUIRED", "Payment instruction cannot be null",
+                        ValidationError.ErrorSeverity.ERROR, null, "paymentInstructions[" + i + "]", null, "Pain001Message"));
                 } else {
                     try {
                         instruction.validate();
                     } catch (MessageValidationException e) {
-                        for (ValidationError error : e.getValidationErrors()) {
-                            errors.add(new ValidationError("paymentInstructions[" + i + "]." + error.getField(),
-                                error.getCode(), error.getMessage(), error.getSeverity()));
-                        }
+                        // Add nested validation errors
+                        errors.add(new ValidationError("NESTED_VALIDATION", "Payment instruction validation failed",
+                            ValidationError.ErrorSeverity.ERROR, null, "paymentInstructions[" + i + "]", null, "Pain001Message"));
                     }
                 }
             }
@@ -170,20 +187,19 @@ public class Pain001Message implements BaseMessage {
 
         // Validate number of transactions
         if (numberOfTransactions <= 0) {
-            errors.add(new ValidationError("numberOfTransactions", "INVALID",
-                "Number of transactions must be greater than 0", "ERROR"));
+            errors.add(new ValidationError("INVALID", "Number of transactions must be greater than 0",
+                ValidationError.ErrorSeverity.ERROR, null, "numberOfTransactions", String.valueOf(numberOfTransactions), "Pain001Message"));
         }
 
         // Validate control sum
         if (controlSum <= 0) {
-            errors.add(new ValidationError("controlSum", "INVALID",
-                "Control sum must be greater than 0", "ERROR"));
+            errors.add(new ValidationError("INVALID", "Control sum must be greater than 0",
+                ValidationError.ErrorSeverity.ERROR, null, "controlSum", String.valueOf(controlSum), "Pain001Message"));
         }
 
         // Check if validation failed
         if (!errors.isEmpty()) {
-            throw new MessageValidationException("Pain001Message validation failed",
-                messageId, messageType, errors);
+            throw new MessageValidationException("Pain001Message validation failed", messageId, messageType);
         }
 
         return true;
@@ -229,33 +245,33 @@ public class Pain001Message implements BaseMessage {
             List<ValidationError> errors = new ArrayList<>();
 
             if (instructionId == null || instructionId.trim().isEmpty()) {
-                errors.add(new ValidationError("instructionId", "REQUIRED",
-                    "Instruction ID is required", "ERROR"));
+                errors.add(new ValidationError("REQUIRED", "Instruction ID is required",
+                    ValidationError.ErrorSeverity.ERROR, null, "instructionId", instructionId, "PaymentInstruction"));
             }
 
             if (amount <= 0) {
-                errors.add(new ValidationError("amount", "INVALID",
-                    "Amount must be greater than 0", "ERROR"));
+                errors.add(new ValidationError("INVALID", "Amount must be greater than 0",
+                    ValidationError.ErrorSeverity.ERROR, null, "amount", String.valueOf(amount), "PaymentInstruction"));
             }
 
             if (currency == null || currency.trim().isEmpty()) {
-                errors.add(new ValidationError("currency", "REQUIRED",
-                    "Currency is required", "ERROR"));
+                errors.add(new ValidationError("REQUIRED", "Currency is required",
+                    ValidationError.ErrorSeverity.ERROR, null, "currency", currency, "PaymentInstruction"));
             }
 
             if (debtorAccount == null || debtorAccount.trim().isEmpty()) {
-                errors.add(new ValidationError("debtorAccount", "REQUIRED",
-                    "Debtor account is required", "ERROR"));
+                errors.add(new ValidationError("REQUIRED", "Debtor account is required",
+                    ValidationError.ErrorSeverity.ERROR, null, "debtorAccount", debtorAccount, "PaymentInstruction"));
             }
 
             if (creditorAccount == null || creditorAccount.trim().isEmpty()) {
-                errors.add(new ValidationError("creditorAccount", "REQUIRED",
-                    "Creditor account is required", "ERROR"));
+                errors.add(new ValidationError("REQUIRED", "Creditor account is required",
+                    ValidationError.ErrorSeverity.ERROR, null, "creditorAccount", creditorAccount, "PaymentInstruction"));
             }
 
             if (!errors.isEmpty()) {
                 throw new MessageValidationException("PaymentInstruction validation failed",
-                    instructionId, "pain.001.instruction", errors);
+                    instructionId, "pain.001.instruction");
             }
         }
 

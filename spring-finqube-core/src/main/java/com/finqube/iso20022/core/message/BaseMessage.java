@@ -115,4 +115,34 @@ public interface BaseMessage {
      * @return the ISO 20022 schema version
      */
     String getSchemaVersion();
+
+    /**
+     * Gets the list of transaction identifiers associated with this message.
+     *
+     * <p>For payment messages, this typically contains the unique identifiers
+     * of the individual transactions being processed.</p>
+     *
+     * @return the list of transaction identifiers
+     */
+    java.util.List<String> getTransactions();
+
+    /**
+     * Gets the total number of transactions in this message.
+     *
+     * <p>This count should match the size of the transactions list and
+     * represents the number of individual operations being processed.</p>
+     *
+     * @return the number of transactions
+     */
+    int getTransactionCount();
+
+    /**
+     * Gets the total amount of all transactions in this message.
+     *
+     * <p>For payment messages, this represents the sum of all individual
+     * transaction amounts being processed.</p>
+     *
+     * @return the total amount of all transactions
+     */
+    double getTotalAmount();
 }

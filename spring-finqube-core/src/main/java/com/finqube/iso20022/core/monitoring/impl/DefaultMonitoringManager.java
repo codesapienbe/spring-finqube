@@ -46,13 +46,13 @@ public class DefaultMonitoringManager implements MonitoringManager {
     private volatile boolean available = true;
 
     /**
-     * Constructs a new DefaultMonitoringManager.
+     * Creates a new DefaultMonitoringManager instance.
      */
     public DefaultMonitoringManager() {
         this.monitoringManagerId = "default-monitoring";
         this.displayName = "Default Monitoring Manager";
         this.version = "1.0";
-        this.statistics = new MonitoringStatistics(monitoringManagerId, Instant.now(), metricTypeCounts, errorTypeCounts);
+        this.statistics = new MonitoringStatistics(monitoringManagerId);
 
         logger.info("DefaultMonitoringManager initialized");
     }
@@ -74,13 +74,13 @@ public class DefaultMonitoringManager implements MonitoringManager {
 
             Instant endTime = Instant.now();
             long processingTime = endTime.toEpochMilli() - startTime.toEpochMilli();
-            statistics.recordMetricSuccess("METRIC", processingTime);
+            statistics.recordSuccessfulOperation("METRIC", processingTime);
 
             logger.debug("Metric recorded successfully: {}", metricName);
 
         } catch (Exception e) {
             long processingTime = Instant.now().toEpochMilli() - startTime.toEpochMilli();
-            statistics.recordHealthCheckFailure("METRIC_RECORDING_ERROR", processingTime);
+            statistics.recordFailedOperation("METRIC", "METRIC_RECORDING_ERROR", processingTime);
             logger.error("Failed to record metric: {}", metricName, e);
         }
     }
@@ -107,13 +107,13 @@ public class DefaultMonitoringManager implements MonitoringManager {
 
             Instant endTime = Instant.now();
             long processingTime = endTime.toEpochMilli() - startTime.toEpochMilli();
-            statistics.recordCounterSuccess(processingTime);
+            statistics.recordSuccessfulOperation("COUNTER", processingTime);
 
             logger.debug("Counter incremented successfully: {}", metricName);
 
         } catch (Exception e) {
             long processingTime = Instant.now().toEpochMilli() - startTime.toEpochMilli();
-            statistics.recordHealthCheckFailure("COUNTER_INCREMENT_ERROR", processingTime);
+            statistics.recordFailedOperation("COUNTER", "COUNTER_INCREMENT_ERROR", processingTime);
             logger.error("Failed to increment counter: {}", metricName, e);
         }
     }
@@ -140,13 +140,13 @@ public class DefaultMonitoringManager implements MonitoringManager {
 
             Instant endTime = Instant.now();
             long processingTime = endTime.toEpochMilli() - startTime.toEpochMilli();
-            statistics.recordTimingSuccess(processingTime);
+            statistics.recordSuccessfulOperation("TIMING", processingTime);
 
             logger.debug("Timing recorded successfully: {}", metricName);
 
         } catch (Exception e) {
             long processingTime = Instant.now().toEpochMilli() - startTime.toEpochMilli();
-            statistics.recordHealthCheckFailure("TIMING_RECORDING_ERROR", processingTime);
+            statistics.recordFailedOperation("TIMING", "TIMING_RECORDING_ERROR", processingTime);
             logger.error("Failed to record timing: {}", metricName, e);
         }
     }
@@ -165,18 +165,21 @@ public class DefaultMonitoringManager implements MonitoringManager {
         try {
             logger.debug("Recording event: {}", eventName);
 
-            // Simulate event processing
-            Thread.sleep(15);
+            // Store event data (simplified)
+            currentMetrics.put(eventName + "_count", 1.0);
+
+            // Simulate processing time
+            Thread.sleep(12);
 
             Instant endTime = Instant.now();
             long processingTime = endTime.toEpochMilli() - startTime.toEpochMilli();
-            statistics.recordEventSuccess(processingTime);
+            statistics.recordSuccessfulOperation("EVENT", processingTime);
 
             logger.debug("Event recorded successfully: {}", eventName);
 
         } catch (Exception e) {
             long processingTime = Instant.now().toEpochMilli() - startTime.toEpochMilli();
-            statistics.recordHealthCheckFailure("EVENT_RECORDING_ERROR", processingTime);
+            statistics.recordFailedOperation("EVENT", "EVENT_RECORDING_ERROR", processingTime);
             logger.error("Failed to record event: {}", eventName, e);
         }
     }
@@ -193,50 +196,34 @@ public class DefaultMonitoringManager implements MonitoringManager {
         try {
             logger.debug("Getting system health");
 
-            List<ComponentHealth> components = new ArrayList<>();
-
-            // Check monitoring manager health
-            components.add(new ComponentHealth("monitoring-manager", "Monitoring Manager",
-                ComponentHealth.HealthStatus.HEALTHY, "Monitoring manager is healthy",
-                Instant.now(), 5, Map.of(), Map.of()));
-
-            // Check metrics collection health
-            components.add(new ComponentHealth("metrics-collection", "Metrics Collection",
-                ComponentHealth.HealthStatus.HEALTHY, "Metrics collection is working",
-                Instant.now(), 3, Map.of(), Map.of()));
-
-            // Check health checks health
-            components.add(new ComponentHealth("health-checks", "Health Checks",
-                ComponentHealth.HealthStatus.HEALTHY, "Health checks are functioning",
-                Instant.now(), 4, Map.of(), Map.of()));
+            // Simulate health check processing
+            Thread.sleep(50);
 
             Map<String, Object> metrics = new HashMap<>();
-            metrics.put("totalMetrics", currentMetrics.size());
-            metrics.put("totalCounters", counters.size());
-            metrics.put("uptimeSeconds", statistics.getUptimeMillis() / 1000);
+            metrics.put("cpu_usage", 45.2);
+            metrics.put("memory_usage", 67.8);
+            metrics.put("disk_usage", 23.1);
+            metrics.put("active_connections", 125);
 
             Map<String, Object> metadata = new HashMap<>();
+            metadata.put("uptime", System.currentTimeMillis() - startTime.toEpochMilli());
             metadata.put("version", version);
-            metadata.put("available", available);
+            metadata.put("last_check", Instant.now());
 
             Instant endTime = Instant.now();
             long responseTime = endTime.toEpochMilli() - startTime.toEpochMilli();
 
-            SystemHealth.HealthStatus overallStatus = available ?
-                SystemHealth.HealthStatus.HEALTHY : SystemHealth.HealthStatus.UNHEALTHY;
+            SystemHealth.HealthStatus status = available ? SystemHealth.HealthStatus.HEALTHY : SystemHealth.HealthStatus.UNHEALTHY;
 
-            logger.debug("System health retrieved successfully");
-            return new SystemHealth(monitoringManagerId, overallStatus,
-                "System health check completed", endTime, responseTime, components, metrics, metadata);
+            logger.debug("System health check completed successfully");
+            return new SystemHealth(monitoringManagerId, status, "System health check completed", endTime, responseTime, List.of(), metrics, metadata);
 
         } catch (Exception e) {
             long responseTime = Instant.now().toEpochMilli() - startTime.toEpochMilli();
-            statistics.recordHealthCheckFailure("SYSTEM_HEALTH_ERROR", responseTime);
+            statistics.recordFailedOperation("SYSTEM_HEALTH", "SYSTEM_HEALTH_ERROR", responseTime);
             logger.error("Failed to get system health", e);
 
-            return new SystemHealth(monitoringManagerId, SystemHealth.HealthStatus.UNHEALTHY,
-                "Failed to get system health: " + e.getMessage(), Instant.now(), responseTime,
-                List.of(), Map.of(), Map.of());
+            return new SystemHealth(monitoringManagerId, SystemHealth.HealthStatus.UNHEALTHY, "Failed to get system health: " + e.getMessage(), Instant.now(), responseTime, List.of(), Map.of(), Map.of());
         }
     }
 
@@ -254,19 +241,21 @@ public class DefaultMonitoringManager implements MonitoringManager {
             logger.debug("Getting performance metrics from {} to {}", startTime, endTime);
 
             // Simulate metrics calculation
-            Thread.sleep(20);
+            Thread.sleep(30);
 
             Map<String, Object> customMetrics = new HashMap<>();
-            customMetrics.put("activeConnections", 25);
-            customMetrics.put("memoryUsage", 75.5);
-            customMetrics.put("cpuUsage", 45.2);
+            customMetrics.put("average_response_time", 125.5);
+            customMetrics.put("throughput", 45.2);
+            customMetrics.put("error_rate", 0.02);
+            customMetrics.put("success_rate", 0.98);
 
             Map<String, Object> metadata = new HashMap<>();
-            metadata.put("calculationTime", Instant.now());
-            metadata.put("dataPoints", 150);
+            metadata.put("period_start", startTime);
+            metadata.put("period_end", endTime);
+            metadata.put("data_points", 1500);
 
             return new PerformanceMetrics(monitoringManagerId, startTime, endTime,
-                1000, 950, 50, 125.5, 25, 500, 10.5, 5.0, customMetrics, metadata);
+                1000, 950, 50, 125.5, 25, 500, 45.2, 0.02, customMetrics, metadata);
 
         } catch (Exception e) {
             logger.error("Failed to get performance metrics", e);
@@ -283,7 +272,7 @@ public class DefaultMonitoringManager implements MonitoringManager {
     @Override
     public PerformanceMetrics getCurrentPerformanceMetrics() {
         Instant now = Instant.now();
-        Instant startTime = now.minusSeconds(300); // Last 5 minutes
+        Instant startTime = now.minus(java.time.Duration.ofMinutes(5));
         return getPerformanceMetrics(startTime, now);
     }
 
@@ -299,22 +288,18 @@ public class DefaultMonitoringManager implements MonitoringManager {
 
             List<ComponentHealth> components = new ArrayList<>();
 
-            // Monitoring manager component
+            // Add monitoring manager health
             components.add(new ComponentHealth("monitoring-manager", "Monitoring Manager",
-                ComponentHealth.HealthStatus.HEALTHY, "Monitoring manager is healthy",
-                Instant.now(), 5, Map.of("version", version), Map.of()));
+                available ? ComponentHealth.HealthStatus.HEALTHY : ComponentHealth.HealthStatus.UNHEALTHY,
+                available ? "Monitoring manager is operational" : "Monitoring manager is unavailable",
+                Instant.now(), 5, Map.of("version", version, "uptime", System.currentTimeMillis() - statistics.getStartTime().toEpochMilli()), Map.of()));
 
-            // Metrics collection component
-            components.add(new ComponentHealth("metrics-collection", "Metrics Collection",
-                ComponentHealth.HealthStatus.HEALTHY, "Metrics collection is working",
-                Instant.now(), 3, Map.of("totalMetrics", currentMetrics.size()), Map.of()));
+            // Add statistics component health
+            components.add(new ComponentHealth("statistics", "Statistics Collection",
+                ComponentHealth.HealthStatus.HEALTHY,
+                "Statistics collection is operational",
+                Instant.now(), 3, Map.of("total_operations", statistics.getTotalOperations(), "success_rate", statistics.getSuccessRate()), Map.of()));
 
-            // Health checks component
-            components.add(new ComponentHealth("health-checks", "Health Checks",
-                ComponentHealth.HealthStatus.HEALTHY, "Health checks are functioning",
-                Instant.now(), 4, Map.of("totalChecks", statistics.getTotalHealthChecks()), Map.of()));
-
-            logger.debug("Component health retrieved successfully");
             return components;
 
         } catch (Exception e) {
@@ -366,9 +351,9 @@ public class DefaultMonitoringManager implements MonitoringManager {
             logger.debug("Performing monitoring manager health check");
 
             Map<String, Object> metrics = new HashMap<>();
-            metrics.put("totalMetrics", currentMetrics.size());
-            metrics.put("totalCounters", counters.size());
-            metrics.put("uptimeSeconds", statistics.getUptimeMillis() / 1000);
+            metrics.put("totalOperations", statistics.getTotalOperations());
+            metrics.put("successRate", statistics.getSuccessRate());
+            metrics.put("averageOperationTime", statistics.getAverageOperationTimeMillis());
             metrics.put("operationsPerSecond", statistics.getOperationsPerSecond());
 
             Map<String, Object> metadata = new HashMap<>();
@@ -382,19 +367,17 @@ public class DefaultMonitoringManager implements MonitoringManager {
             MonitoringHealthCheck.HealthStatus status = available ?
                 MonitoringHealthCheck.HealthStatus.HEALTHY : MonitoringHealthCheck.HealthStatus.UNHEALTHY;
 
-            statistics.recordHealthCheckSuccess(responseTime);
+            statistics.recordSuccessfulOperation("HEALTH_CHECK", responseTime);
 
             logger.debug("Monitoring manager health check completed successfully");
-            return new MonitoringHealthCheck(monitoringManagerId, status,
-                "Monitoring manager health check completed", endTime, responseTime, metrics, metadata);
+            return new MonitoringHealthCheck(monitoringManagerId, status, "Monitoring manager health check completed", endTime, responseTime, metrics, metadata);
 
         } catch (Exception e) {
             long responseTime = Instant.now().toEpochMilli() - startTime.toEpochMilli();
-            statistics.recordHealthCheckFailure("HEALTH_CHECK_ERROR", responseTime);
+            statistics.recordFailedOperation("HEALTH_CHECK", "HEALTH_CHECK_ERROR", responseTime);
             logger.error("Failed to perform health check", e);
 
-            return new MonitoringHealthCheck(monitoringManagerId, MonitoringHealthCheck.HealthStatus.UNHEALTHY,
-                "Health check failed: " + e.getMessage(), Instant.now(), responseTime, Map.of(), Map.of());
+            return new MonitoringHealthCheck(monitoringManagerId, MonitoringHealthCheck.HealthStatus.UNHEALTHY, "Health check failed: " + e.getMessage(), Instant.now(), responseTime, Map.of(), Map.of());
         }
     }
 
