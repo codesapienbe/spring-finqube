@@ -24,32 +24,38 @@ We welcome contributions from the community! Here are the main ways you can cont
 ### Development Setup
 
 1. **Fork the repository**
+
    ```bash
    git clone https://github.com/your-username/spring-finqube.git
    cd spring-finqube
    ```
 
 2. **Set up your development environment**
+
    ```bash
    mvn clean install
    ```
 
 3. **Create a feature branch**
+
    ```bash
    git checkout -b feature/your-feature-name
    ```
 
 4. **Make your changes and test them**
+
    ```bash
    mvn clean test
    ```
 
 5. **Commit your changes**
+
    ```bash
    git commit -m "feat: add new ISO 20022 message type support"
    ```
 
 6. **Push to your fork**
+
    ```bash
    git push origin feature/your-feature-name
    ```
@@ -80,6 +86,7 @@ We use [Conventional Commits](https://www.conventionalcommits.org/) format:
 ```
 
 **Types:**
+
 - `feat`: New feature
 - `fix`: Bug fix
 - `docs`: Documentation changes
@@ -89,6 +96,7 @@ We use [Conventional Commits](https://www.conventionalcommits.org/) format:
 - `chore`: Maintenance tasks
 
 **Examples:**
+
 ```
 feat(core): add support for pain.001 message validation
 fix(autoconfig): resolve bean creation issue in starter
@@ -115,6 +123,7 @@ test(core): add unit tests for message parser
 ### 1. Issue Creation
 
 Before starting work, create an issue to:
+
 - Describe the problem or feature
 - Discuss the proposed solution
 - Get feedback from maintainers
@@ -139,6 +148,7 @@ Before starting work, create an issue to:
 ### 4. Code Review
 
 All code changes require review:
+
 - At least one maintainer approval
 - All CI checks must pass
 - Code style and quality standards met
@@ -269,7 +279,7 @@ We are committed to providing a welcoming and inclusive environment:
 - **GitHub Issues**: For bug reports and feature requests
 - **GitHub Discussions**: For questions and general discussion
 - **Pull Requests**: For code contributions
-- **Email**: For security issues (support@finqube.com)
+- **Email**: For security issues (<support@finqube.com>)
 
 ## 📋 Checklist for Contributors
 
@@ -307,4 +317,4 @@ Thank you for contributing to Spring Finqube! Your contributions help make finan
 
 ---
 
-**Happy coding! 🚀** 
+**Happy coding! 🚀**
