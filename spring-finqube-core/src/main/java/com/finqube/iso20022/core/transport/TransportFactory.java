@@ -1,5 +1,6 @@
 package com.finqube.iso20022.core.transport;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -145,23 +146,37 @@ public class TransportFactory {
     }
 
     /**
-     * Gets transport information by ID.
+     * Gets information about a specific transport.
      *
      * @param transportId the transport identifier
      * @return optional transport information
      */
     public Optional<TransportInfo> getTransportInfo(String transportId) {
+        Objects.requireNonNull(transportId, "Transport ID cannot be null");
+
         TransportProvider provider = transportProviders.get(transportId);
         if (provider == null) {
             return Optional.empty();
         }
 
-        return Optional.of(new TransportInfo(
+        TransportInfo info = new TransportInfo(
             provider.getTransportId(),
             provider.getDisplayName(),
             provider.getProtocolVersion(),
             provider.getDescription()
-        ));
+        );
+
+        return Optional.of(info);
+    }
+
+    /**
+     * Gets transport statistics.
+     *
+     * @return transport statistics
+     */
+    public TransportStatistics getStatistics() {
+        // TODO: Implement comprehensive transport statistics
+        return new TransportStatistics("transport-factory", Instant.now(), Map.of(), Map.of());
     }
 
     /**

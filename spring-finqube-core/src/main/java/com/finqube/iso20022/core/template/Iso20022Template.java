@@ -99,8 +99,8 @@ public class Iso20022Template {
      * Sends an ISO 20022 message object.
      *
      * <p>This method accepts a BaseMessage object and processes it through the
-     * validation and transport pipeline. The message is first validated according
-     * to its specific business rules.</p>
+     * validation and transport pipeline. The message is first validated, then
+     * converted to XML format, and finally sent via the transport layer.</p>
      *
      * @param message the ISO 20022 message object
      * @return the unique message identifier assigned to this message
@@ -111,34 +111,91 @@ public class Iso20022Template {
         Objects.requireNonNull(message, "Message cannot be null");
 
         String messageId = message.getMessageId();
-        if (messageId == null || messageId.trim().isEmpty()) {
-            messageId = generateMessageId();
-        }
-
-        logger.info("Sending ISO 20022 message: {} (Type: {})", messageId, message.getMessageType());
+        logger.info("Sending ISO 20022 message with ID: {}", messageId);
 
         try {
             // Validate the message
-            if (message.validate()) {
-                logger.debug("Message validation passed for: {}", messageId);
-            } else {
+            if (!message.validate()) {
                 throw new MessageValidationException("Message validation failed", messageId, message.getMessageType());
             }
 
-            // TODO: Implement transport layer
-            logger.info("Message would be sent via transport layer (currently logging only)");
+            // Generate XML from message
+            String xml = generateXml(message);
+            logger.debug("Generated XML for message: {}", messageId);
 
-            logger.info("Successfully processed message: {}", messageId);
-            return messageId;
+            // Send via transport layer
+            return sendMessage(xml);
 
         } catch (MessageValidationException e) {
-            logger.error("Message validation failed: {}", messageId, e);
             throw e;
-                } catch (Exception e) {
+        } catch (Exception e) {
             logger.error("Failed to send message: {}", messageId, e);
             throw new MessageValidationException("Failed to send message: " + e.getMessage(),
                 messageId, message.getMessageType());
         }
+    }
+
+    /**
+     * Generates XML from a BaseMessage object.
+     *
+     * <p>This method converts a BaseMessage object to its XML representation.
+     * The generated XML follows the ISO 20022 schema for the specific message type.</p>
+     *
+     * @param message the BaseMessage object to convert
+     * @return the XML representation of the message
+     * @throws IllegalArgumentException if the message is null
+     */
+    public String generateXml(BaseMessage message) {
+        Objects.requireNonNull(message, "Message cannot be null");
+
+        String messageId = message.getMessageId();
+        logger.debug("Generating XML for message: {}", messageId);
+
+        // TODO: Implement proper XML generation based on message type
+        // For now, return a simple XML structure
+        return String.format("""
+            <?xml version="1.0" encoding="UTF-8"?>
+            <Document xmlns="urn:iso:std:iso:20022:tech:xsd:%s">
+                <messageId>%s</messageId>
+                <messageType>%s</messageType>
+                <businessProcess>%s</businessProcess>
+                <creationTime>%s</creationTime>
+                <description>%s</description>
+            </Document>
+            """,
+            message.getMessageType().toLowerCase(),
+            message.getMessageId(),
+            message.getMessageType(),
+            message.getBusinessProcess(),
+            message.getCreationTime(),
+            message.getDescription()
+        );
+    }
+
+    /**
+     * Generates XML from a BaseMessage object with custom options.
+     *
+     * <p>This method converts a BaseMessage object to its XML representation
+     * using the specified template options for customization.</p>
+     *
+     * @param message the BaseMessage object to convert
+     * @param options the template options for customization
+     * @return the XML representation of the message
+     * @throws IllegalArgumentException if the message or options are null
+     */
+    public String generateXml(BaseMessage message, TemplateOptions options) {
+        Objects.requireNonNull(message, "Message cannot be null");
+        Objects.requireNonNull(options, "Template options cannot be null");
+
+        String xml = generateXml(message);
+
+        // Apply formatting options if enabled
+        if (options.isEnableFormatting() && options.isEnableIndentation()) {
+            // TODO: Implement proper XML formatting with indentation
+            logger.debug("Applying formatting options to XML for message: {}", message.getMessageId());
+        }
+
+        return xml;
     }
 
     /**

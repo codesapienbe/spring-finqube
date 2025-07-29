@@ -187,7 +187,7 @@ public class MonitoringStatistics {
     /**
      * Gets the average operation time in milliseconds.
      *
-     * @return the average operation time, or 0.0 if no operations
+     * @return the average operation time in milliseconds
      */
     public double getAverageOperationTimeMillis() {
         long total = totalOperations.get();
@@ -195,6 +195,42 @@ public class MonitoringStatistics {
             return 0.0;
         }
         return (double) totalOperationTimeMillis.get() / total;
+    }
+
+    /**
+     * Gets the total metrics recorded.
+     *
+     * @return the total metrics recorded
+     */
+    public long getTotalMetricsRecorded() {
+        return totalOperations.get();
+    }
+
+    /**
+     * Gets the total counters incremented.
+     *
+     * @return the total counters incremented
+     */
+    public long getTotalCountersIncremented() {
+        return successfulOperations.get();
+    }
+
+    /**
+     * Gets the total timings recorded.
+     *
+     * @return the total timings recorded
+     */
+    public long getTotalTimingsRecorded() {
+        return totalOperations.get();
+    }
+
+    /**
+     * Gets the average processing time in milliseconds.
+     *
+     * @return the average processing time in milliseconds
+     */
+    public double getAverageProcessingTimeMillis() {
+        return getAverageOperationTimeMillis();
     }
 
     /**

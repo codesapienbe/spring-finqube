@@ -100,6 +100,15 @@ public class TransportResponse {
     }
 
     /**
+     * Gets the response time in milliseconds.
+     *
+     * @return the response time in milliseconds
+     */
+    public long getResponseTimeMillis() {
+        return durationMillis;
+    }
+
+    /**
      * Gets additional metadata about the transport operation.
      *
      * @return the metadata map

@@ -63,7 +63,7 @@ class DefaultAsyncMessageProcessorTest {
         TransportResponse transportResponse = createSuccessfulTransportResponse();
 
         when(validator.validate(message)).thenReturn(validationResult);
-        when(template.sendMessage(message)).thenReturn(transportResponse);
+        when(template.send(message)).thenReturn(transportResponse);
 
         // When
         CompletableFuture<ProcessingResult> future = processor.processAsync(message);
@@ -84,8 +84,7 @@ class DefaultAsyncMessageProcessorTest {
         ValidationResult validationResult = ValidationResult.success("xml-test", Instant.now(), 50);
         TransportResponse transportResponse = createSuccessfulTransportResponse();
 
-        when(validator.validateXml(xmlContent)).thenReturn(validationResult);
-        when(template.sendXml(xmlContent)).thenReturn(transportResponse);
+        when(template.sendMessage(xmlContent)).thenReturn(transportResponse);
 
         // When
         CompletableFuture<ProcessingResult> future = processor.processXmlAsync(xmlContent);

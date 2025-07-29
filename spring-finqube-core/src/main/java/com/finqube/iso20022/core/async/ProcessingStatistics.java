@@ -135,9 +135,18 @@ public class ProcessingStatistics {
     /**
      * Gets the number of successful messages.
      *
-     * @return the successful messages count
+     * @return the number of successful messages
      */
     public long getSuccessfulMessages() {
+        return successfulMessages.get();
+    }
+
+    /**
+     * Gets the number of successful processing operations.
+     *
+     * @return the number of successful processing operations
+     */
+    public long getSuccessfulProcessing() {
         return successfulMessages.get();
     }
 
