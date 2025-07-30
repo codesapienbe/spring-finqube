@@ -96,7 +96,8 @@ public class SimpleMessageValidator implements MessageValidator {
             metadata.put("errorCount", errors.size());
             metadata.put("warningCount", warnings.size());
 
-            return new ValidationResult(messageId, isValid, errors, warnings, startTime, duration, metadata);
+            String resultMessageId = messageId != null ? messageId : "unknown";
+            return new ValidationResult(resultMessageId, isValid, errors, warnings, startTime, duration, metadata);
 
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();

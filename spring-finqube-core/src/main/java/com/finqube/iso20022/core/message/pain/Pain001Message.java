@@ -63,7 +63,7 @@ public class Pain001Message implements BaseMessage {
         this.requiresAcknowledgment = true;
         this.description = "Customer Credit Transfer Initiation";
 
-        this.paymentInstructions = new ArrayList<>(paymentInstructions);
+        this.paymentInstructions = paymentInstructions != null ? new ArrayList<>(paymentInstructions) : new ArrayList<>();
         this.numberOfTransactions = numberOfTransactions;
         this.controlSum = controlSum;
     }
@@ -114,7 +114,7 @@ public class Pain001Message implements BaseMessage {
      * @return the payment instructions
      */
     public List<PaymentInstruction> getPaymentInstructions() {
-        return new ArrayList<>(paymentInstructions);
+        return List.copyOf(paymentInstructions);
     }
 
     /**
@@ -199,7 +199,9 @@ public class Pain001Message implements BaseMessage {
 
         // Check if validation failed
         if (!errors.isEmpty()) {
-            throw new MessageValidationException("Pain001Message validation failed", messageId, messageType);
+            String errorMessage = String.format("Pain001Message validation failed [Message ID: %s] [Message Type: %s] [Validation Errors: %d]",
+                messageId, messageType, errors.size());
+            throw new MessageValidationException(errorMessage, messageId, messageType);
         }
 
         return true;
@@ -270,8 +272,9 @@ public class Pain001Message implements BaseMessage {
             }
 
             if (!errors.isEmpty()) {
-                throw new MessageValidationException("PaymentInstruction validation failed",
-                    instructionId, "pain.001.instruction");
+                String errorMessage = String.format("PaymentInstruction validation failed [Message ID: %s] [Message Type: %s] [Validation Errors: %d]",
+                    instructionId, "pain.001.instruction", errors.size());
+                throw new MessageValidationException(errorMessage, instructionId, "pain.001.instruction");
             }
         }
 

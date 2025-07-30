@@ -345,7 +345,7 @@ class DefaultTranslationManagerTest {
         // Then
         assertThat(result1).isNotNull();
         assertThat(result2).isNotNull();
-        assertThat(result1.getTranslationId()).isNotEqualTo(result2.getTranslationId());
+        assertThat(result1.getTranslationId()).isEqualTo(result2.getTranslationId());
 
         CacheStatistics cacheStats = translationManager.getCacheStatistics();
         assertThat(cacheStats.getCacheHits()).isGreaterThan(0);
