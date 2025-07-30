@@ -21,7 +21,7 @@ import com.finqube.iso20022.core.async.ProcessingResult;
 import com.finqube.iso20022.core.async.ProcessingStatistics;
 import com.finqube.iso20022.core.message.BaseMessage;
 import com.finqube.iso20022.core.template.Iso20022TemplateOperations;
-import com.finqube.iso20022.core.transport.TransportFactory;
+import com.finqube.iso20022.core.transport.TransportFactoryOperations;
 import com.finqube.iso20022.core.validation.MessageValidator;
 
 /**
@@ -46,7 +46,7 @@ public class DefaultAsyncMessageProcessor implements AsyncMessageProcessor {
 
     private final ExecutorService executorService;
     private final Iso20022TemplateOperations template;
-    private final TransportFactory transportFactory;
+    private final TransportFactoryOperations transportFactory;
     private final MessageValidator validator;
 
     private volatile boolean available = true;
@@ -60,8 +60,8 @@ public class DefaultAsyncMessageProcessor implements AsyncMessageProcessor {
      * @param validator the message validator
      * @param threadPoolSize the size of the thread pool
      */
-    public DefaultAsyncMessageProcessor(Iso20022TemplateOperations template, TransportFactory transportFactory,
-                                      MessageValidator validator, int threadPoolSize) {
+    public DefaultAsyncMessageProcessor(Iso20022TemplateOperations template, TransportFactoryOperations transportFactory,
+                                        MessageValidator validator, int threadPoolSize) {
         this.processorId = "default-async";
         this.displayName = "Default Async Message Processor";
         this.version = "1.0";

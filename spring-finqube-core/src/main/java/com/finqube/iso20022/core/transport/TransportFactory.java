@@ -34,7 +34,7 @@ import org.springframework.stereotype.Component;
  * @since 0.1.0
  */
 @Component
-public class TransportFactory {
+public class TransportFactory implements TransportFactoryOperations {
 
     private static final Logger logger = LoggerFactory.getLogger(TransportFactory.class);
 

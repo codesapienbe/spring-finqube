@@ -19,7 +19,7 @@ import com.finqube.iso20022.core.message.BaseMessage;
 import com.finqube.iso20022.core.message.MessagePriority;
 import com.finqube.iso20022.core.message.pain.Pain001Message;
 import com.finqube.iso20022.core.template.Iso20022TemplateOperations;
-import com.finqube.iso20022.core.transport.TransportFactory;
+import com.finqube.iso20022.core.transport.TransportFactoryOperations;
 import com.finqube.iso20022.core.transport.TransportResponse;
 import com.finqube.iso20022.core.transport.TransportStatus;
 import com.finqube.iso20022.core.validation.MessageValidator;
@@ -40,13 +40,13 @@ class DefaultAsyncMessageProcessorTest {
 
     private DefaultAsyncMessageProcessor processor;
     private Iso20022TemplateOperations template;
-    private TransportFactory transportFactory;
+    private TransportFactoryOperations transportFactory;
     private MessageValidator validator;
 
     @BeforeEach
     void setUp() {
         template = mock(Iso20022TemplateOperations.class);
-        transportFactory = mock(TransportFactory.class);
+        transportFactory = mock(TransportFactoryOperations.class);
         validator = mock(MessageValidator.class);
 
         processor = new DefaultAsyncMessageProcessor(template, transportFactory, validator, 2);
