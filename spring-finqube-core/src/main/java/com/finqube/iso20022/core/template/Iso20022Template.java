@@ -43,7 +43,7 @@ import com.finqube.iso20022.core.message.BaseMessage;
  * @since 0.1.0
  */
 @Component
-public class Iso20022Template {
+public class Iso20022Template implements Iso20022TemplateOperations {
 
     private static final Logger logger = LoggerFactory.getLogger(Iso20022Template.class);
 
@@ -69,7 +69,9 @@ public class Iso20022Template {
      * @throws IllegalArgumentException if the XML is null or empty
      */
     public String sendMessage(String xml) throws MessageValidationException {
-        Objects.requireNonNull(xml, "XML message cannot be null");
+        if (xml == null) {
+            throw new IllegalArgumentException("XML message cannot be null");
+        }
 
         if (xml.trim().isEmpty()) {
             throw new IllegalArgumentException("XML message cannot be empty");
@@ -108,9 +110,11 @@ public class Iso20022Template {
      * @throws IllegalArgumentException if the message is null
      */
     public String send(BaseMessage message) throws MessageValidationException {
-        Objects.requireNonNull(message, "Message cannot be null");
+        if (message == null) {
+            throw new IllegalArgumentException("Message cannot be null");
+        }
 
-        String messageId = message.getMessageId();
+        String messageId = generateMessageId();
         logger.info("Sending ISO 20022 message with ID: {}", messageId);
 
         try {
@@ -146,7 +150,9 @@ public class Iso20022Template {
      * @throws IllegalArgumentException if the message is null
      */
     public String generateXml(BaseMessage message) {
-        Objects.requireNonNull(message, "Message cannot be null");
+        if (message == null) {
+            throw new IllegalArgumentException("Message cannot be null");
+        }
 
         String messageId = message.getMessageId();
         logger.debug("Generating XML for message: {}", messageId);
@@ -184,8 +190,12 @@ public class Iso20022Template {
      * @throws IllegalArgumentException if the message or options are null
      */
     public String generateXml(BaseMessage message, TemplateOptions options) {
-        Objects.requireNonNull(message, "Message cannot be null");
-        Objects.requireNonNull(options, "Template options cannot be null");
+        if (message == null) {
+            throw new IllegalArgumentException("Message cannot be null");
+        }
+        if (options == null) {
+            throw new IllegalArgumentException("Template options cannot be null");
+        }
 
         String xml = generateXml(message);
 

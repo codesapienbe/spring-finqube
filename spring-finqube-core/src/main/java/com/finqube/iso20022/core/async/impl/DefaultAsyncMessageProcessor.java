@@ -20,7 +20,7 @@ import com.finqube.iso20022.core.async.ProcessingHealthCheck;
 import com.finqube.iso20022.core.async.ProcessingResult;
 import com.finqube.iso20022.core.async.ProcessingStatistics;
 import com.finqube.iso20022.core.message.BaseMessage;
-import com.finqube.iso20022.core.template.Iso20022Template;
+import com.finqube.iso20022.core.template.Iso20022TemplateOperations;
 import com.finqube.iso20022.core.transport.TransportFactory;
 import com.finqube.iso20022.core.validation.MessageValidator;
 
@@ -45,7 +45,7 @@ public class DefaultAsyncMessageProcessor implements AsyncMessageProcessor {
     private final Map<String, Long> errorTypeCounts = new ConcurrentHashMap<>();
 
     private final ExecutorService executorService;
-    private final Iso20022Template template;
+    private final Iso20022TemplateOperations template;
     private final TransportFactory transportFactory;
     private final MessageValidator validator;
 
@@ -60,7 +60,7 @@ public class DefaultAsyncMessageProcessor implements AsyncMessageProcessor {
      * @param validator the message validator
      * @param threadPoolSize the size of the thread pool
      */
-    public DefaultAsyncMessageProcessor(Iso20022Template template, TransportFactory transportFactory,
+    public DefaultAsyncMessageProcessor(Iso20022TemplateOperations template, TransportFactory transportFactory,
                                       MessageValidator validator, int threadPoolSize) {
         this.processorId = "default-async";
         this.displayName = "Default Async Message Processor";

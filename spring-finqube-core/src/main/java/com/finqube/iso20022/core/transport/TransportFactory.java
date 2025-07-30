@@ -3,7 +3,6 @@ package com.finqube.iso20022.core.transport;
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.ServiceLoader;
 import java.util.concurrent.ConcurrentHashMap;
@@ -78,7 +77,9 @@ public class TransportFactory {
      * @throws TransportException if the transport is not available or cannot be created
      */
     public Transport getTransport(String transportId) throws TransportException {
-        Objects.requireNonNull(transportId, "Transport ID cannot be null");
+        if (transportId == null) {
+            throw new TransportException("Transport ID cannot be null", null, null, TransportStatus.UNAVAILABLE);
+        }
 
         return transportInstances.computeIfAbsent(transportId, this::createTransport);
     }
@@ -152,7 +153,9 @@ public class TransportFactory {
      * @return optional transport information
      */
     public Optional<TransportInfo> getTransportInfo(String transportId) {
-        Objects.requireNonNull(transportId, "Transport ID cannot be null");
+        if (transportId == null) {
+            throw new IllegalArgumentException("Transport ID cannot be null");
+        }
 
         TransportProvider provider = transportProviders.get(transportId);
         if (provider == null) {

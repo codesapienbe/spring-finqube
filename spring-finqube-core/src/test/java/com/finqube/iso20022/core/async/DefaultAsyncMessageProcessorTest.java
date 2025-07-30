@@ -1,31 +1,29 @@
 package com.finqube.iso20022.core.async;
 
+import java.time.Instant;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import java.time.Instant;
-import java.util.List;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.TimeUnit;
-import java.util.Map;
-
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.DisplayName;
-
+import com.finqube.iso20022.core.async.impl.DefaultAsyncMessageProcessor;
 import com.finqube.iso20022.core.message.BaseMessage;
 import com.finqube.iso20022.core.message.MessagePriority;
 import com.finqube.iso20022.core.message.pain.Pain001Message;
-import com.finqube.iso20022.core.template.Iso20022Template;
+import com.finqube.iso20022.core.template.Iso20022TemplateOperations;
 import com.finqube.iso20022.core.transport.TransportFactory;
 import com.finqube.iso20022.core.transport.TransportResponse;
 import com.finqube.iso20022.core.transport.TransportStatus;
 import com.finqube.iso20022.core.validation.MessageValidator;
 import com.finqube.iso20022.core.validation.ValidationResult;
-import com.finqube.iso20022.core.async.impl.DefaultAsyncMessageProcessor;
 
 /**
  * Unit tests for DefaultAsyncMessageProcessor.
@@ -41,13 +39,13 @@ import com.finqube.iso20022.core.async.impl.DefaultAsyncMessageProcessor;
 class DefaultAsyncMessageProcessorTest {
 
     private DefaultAsyncMessageProcessor processor;
-    private Iso20022Template template;
+    private Iso20022TemplateOperations template;
     private TransportFactory transportFactory;
     private MessageValidator validator;
 
     @BeforeEach
     void setUp() {
-        template = mock(Iso20022Template.class);
+        template = mock(Iso20022TemplateOperations.class);
         transportFactory = mock(TransportFactory.class);
         validator = mock(MessageValidator.class);
 
@@ -63,7 +61,7 @@ class DefaultAsyncMessageProcessorTest {
         TransportResponse transportResponse = createSuccessfulTransportResponse();
 
         when(validator.validate(message)).thenReturn(validationResult);
-        when(template.send(message)).thenReturn(transportResponse);
+        when(template.send(message)).thenReturn("success");
 
         // When
         CompletableFuture<ProcessingResult> future = processor.processAsync(message);
@@ -84,7 +82,7 @@ class DefaultAsyncMessageProcessorTest {
         ValidationResult validationResult = ValidationResult.success("xml-test", Instant.now(), 50);
         TransportResponse transportResponse = createSuccessfulTransportResponse();
 
-        when(template.sendMessage(xmlContent)).thenReturn(transportResponse);
+        when(template.sendMessage(xmlContent)).thenReturn("success");
 
         // When
         CompletableFuture<ProcessingResult> future = processor.processXmlAsync(xmlContent);
@@ -125,7 +123,7 @@ class DefaultAsyncMessageProcessorTest {
         TransportResponse transportResponse = createFailedTransportResponse();
 
         when(validator.validate(message)).thenReturn(validationResult);
-        when(template.sendMessage(message)).thenReturn(transportResponse);
+        when(template.send(message)).thenReturn("success");
 
         // When
         CompletableFuture<ProcessingResult> future = processor.processAsync(message);
@@ -192,7 +190,7 @@ class DefaultAsyncMessageProcessorTest {
         TransportResponse transportResponse = createSuccessfulTransportResponse();
 
         when(validator.validate(message)).thenReturn(validationResult);
-        when(template.sendMessage(message)).thenReturn(transportResponse);
+        when(template.send(message)).thenReturn("success");
 
         // When
         processor.processAsync(message).get(5, TimeUnit.SECONDS);
@@ -228,7 +226,7 @@ class DefaultAsyncMessageProcessorTest {
         TransportResponse transportResponse = createSuccessfulTransportResponse();
 
         when(validator.validate(message)).thenReturn(validationResult);
-        when(template.sendMessage(message)).thenReturn(transportResponse);
+        when(template.send(message)).thenReturn("success");
 
         // When
         processor.submitForProcessing(message);
@@ -250,8 +248,7 @@ class DefaultAsyncMessageProcessorTest {
         ValidationResult validationResult = ValidationResult.success("xml-test", Instant.now(), 50);
         TransportResponse transportResponse = createSuccessfulTransportResponse();
 
-        when(validator.validateXml(xmlContent)).thenReturn(validationResult);
-        when(template.sendXml(xmlContent)).thenReturn(transportResponse);
+        when(template.sendMessage(xmlContent)).thenReturn("success");
 
         // When
         processor.submitXmlForProcessing(xmlContent);

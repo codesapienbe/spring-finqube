@@ -137,7 +137,10 @@ public class DefaultSecurityManager implements com.finqube.iso20022.core.securit
 
     @Override
     public SignedMessage sign(BaseMessage message) throws SecurityException {
-        Objects.requireNonNull(message, "Message cannot be null");
+        if (message == null) {
+            throw new SecurityException("Message cannot be null", securityManagerId, null,
+                SecurityException.SecurityErrorType.INVALID_INPUT);
+        }
 
         Instant startTime = Instant.now();
         String messageId = message.getMessageId();
@@ -187,7 +190,10 @@ public class DefaultSecurityManager implements com.finqube.iso20022.core.securit
 
     @Override
     public SignatureVerificationResult verifySignature(SignedMessage signedMessage) throws SecurityException {
-        Objects.requireNonNull(signedMessage, "Signed message cannot be null");
+        if (signedMessage == null) {
+            throw new SecurityException("Signed message cannot be null", securityManagerId, null,
+                SecurityException.SecurityErrorType.INVALID_INPUT);
+        }
 
         Instant startTime = Instant.now();
         String messageId = signedMessage.getMessageId();
@@ -227,8 +233,14 @@ public class DefaultSecurityManager implements com.finqube.iso20022.core.securit
 
     @Override
     public EncryptedMessage encrypt(BaseMessage message, byte[] recipientCertificate) throws SecurityException {
-        Objects.requireNonNull(message, "Message cannot be null");
-        Objects.requireNonNull(recipientCertificate, "Recipient certificate cannot be null");
+        if (message == null) {
+            throw new SecurityException("Message cannot be null", securityManagerId, null,
+                SecurityException.SecurityErrorType.INVALID_INPUT);
+        }
+        if (recipientCertificate == null) {
+            throw new SecurityException("Recipient certificate cannot be null", securityManagerId, null,
+                SecurityException.SecurityErrorType.INVALID_INPUT);
+        }
 
         Instant startTime = Instant.now();
         String messageId = message.getMessageId();
@@ -273,7 +285,10 @@ public class DefaultSecurityManager implements com.finqube.iso20022.core.securit
 
     @Override
     public BaseMessage decrypt(EncryptedMessage encryptedMessage) throws SecurityException {
-        Objects.requireNonNull(encryptedMessage, "Encrypted message cannot be null");
+        if (encryptedMessage == null) {
+            throw new SecurityException("Encrypted message cannot be null", securityManagerId, null,
+                SecurityException.SecurityErrorType.INVALID_INPUT);
+        }
 
         Instant startTime = Instant.now();
         String messageId = encryptedMessage.getMessageId();
@@ -315,8 +330,14 @@ public class DefaultSecurityManager implements com.finqube.iso20022.core.securit
 
     @Override
     public SecureMessage signAndEncrypt(BaseMessage message, byte[] recipientCertificate) throws SecurityException {
-        Objects.requireNonNull(message, "Message cannot be null");
-        Objects.requireNonNull(recipientCertificate, "Recipient certificate cannot be null");
+        if (message == null) {
+            throw new SecurityException("Message cannot be null", securityManagerId, null,
+                SecurityException.SecurityErrorType.INVALID_INPUT);
+        }
+        if (recipientCertificate == null) {
+            throw new SecurityException("Recipient certificate cannot be null", securityManagerId, null,
+                SecurityException.SecurityErrorType.INVALID_INPUT);
+        }
 
         Instant startTime = Instant.now();
         String messageId = message.getMessageId();
@@ -365,7 +386,10 @@ public class DefaultSecurityManager implements com.finqube.iso20022.core.securit
 
     @Override
     public SecureMessageResult verifyAndDecrypt(SecureMessage secureMessage) throws SecurityException {
-        Objects.requireNonNull(secureMessage, "Secure message cannot be null");
+        if (secureMessage == null) {
+            throw new SecurityException("Secure message cannot be null", securityManagerId, null,
+                SecurityException.SecurityErrorType.INVALID_INPUT);
+        }
 
         Instant startTime = Instant.now();
         String messageId = secureMessage.getMessageId();

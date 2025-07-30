@@ -75,10 +75,22 @@ public class DefaultTranslationManager implements TranslationManager {
 
     @Override
     public TranslationResult translate(BaseMessage sourceMessage, String sourceFormat, String targetFormat, TranslationOptions options) throws TranslationException {
-        Objects.requireNonNull(sourceMessage, "Source message cannot be null");
-        Objects.requireNonNull(sourceFormat, "Source format cannot be null");
-        Objects.requireNonNull(targetFormat, "Target format cannot be null");
-        Objects.requireNonNull(options, "Translation options cannot be null");
+        if (sourceMessage == null) {
+            throw new TranslationException("Source message cannot be null", translationManagerId,
+                UUID.randomUUID().toString(), null, null, TranslationException.TranslationErrorType.INVALID_INPUT);
+        }
+        if (sourceFormat == null) {
+            throw new TranslationException("Source format cannot be null", translationManagerId,
+                UUID.randomUUID().toString(), null, null, TranslationException.TranslationErrorType.INVALID_INPUT);
+        }
+        if (targetFormat == null) {
+            throw new TranslationException("Target format cannot be null", translationManagerId,
+                UUID.randomUUID().toString(), null, null, TranslationException.TranslationErrorType.INVALID_INPUT);
+        }
+        if (options == null) {
+            throw new TranslationException("Translation options cannot be null", translationManagerId,
+                UUID.randomUUID().toString(), null, null, TranslationException.TranslationErrorType.INVALID_INPUT);
+        }
 
         Instant startTime = Instant.now();
         String translationId = UUID.randomUUID().toString();

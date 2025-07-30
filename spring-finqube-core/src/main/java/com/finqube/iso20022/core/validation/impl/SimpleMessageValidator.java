@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -54,7 +53,10 @@ public class SimpleMessageValidator implements MessageValidator {
 
     @Override
     public ValidationResult validate(BaseMessage message) throws ValidationException {
-        Objects.requireNonNull(message, "Message cannot be null");
+        if (message == null) {
+            throw new ValidationException("Message cannot be null", validatorId, null,
+                ValidationException.ValidationErrorSeverity.ERROR);
+        }
 
         Instant startTime = Instant.now();
         String messageId = message.getMessageId();
@@ -121,7 +123,10 @@ public class SimpleMessageValidator implements MessageValidator {
 
     @Override
     public ValidationResult validateXml(String xmlContent) throws ValidationException {
-        Objects.requireNonNull(xmlContent, "XML content cannot be null");
+        if (xmlContent == null) {
+            throw new ValidationException("XML content cannot be null", validatorId, null,
+                ValidationException.ValidationErrorSeverity.ERROR);
+        }
 
         Instant startTime = Instant.now();
         String messageId = "xml-" + System.currentTimeMillis();
