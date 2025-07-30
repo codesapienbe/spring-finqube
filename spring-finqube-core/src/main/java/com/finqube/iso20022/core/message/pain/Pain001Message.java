@@ -201,7 +201,12 @@ public class Pain001Message implements BaseMessage {
         if (!errors.isEmpty()) {
             String errorMessage = String.format("Pain001Message validation failed [Message ID: %s] [Message Type: %s] [Validation Errors: %d]",
                 messageId, messageType, errors.size());
-            throw new MessageValidationException(errorMessage, messageId, messageType);
+            MessageValidationException exception = new MessageValidationException(errorMessage, messageId, messageType);
+            for (ValidationError error : errors) {
+                exception.addValidationError(new MessageValidationException.ValidationError(
+                    error.getField(), error.getCode(), error.getMessage(), error.getSeverity().toString()));
+            }
+            throw exception;
         }
 
         return true;
@@ -274,7 +279,12 @@ public class Pain001Message implements BaseMessage {
             if (!errors.isEmpty()) {
                 String errorMessage = String.format("PaymentInstruction validation failed [Message ID: %s] [Message Type: %s] [Validation Errors: %d]",
                     instructionId, "pain.001.instruction", errors.size());
-                throw new MessageValidationException(errorMessage, instructionId, "pain.001.instruction");
+                MessageValidationException exception = new MessageValidationException(errorMessage, instructionId, "pain.001.instruction");
+                for (ValidationError error : errors) {
+                    exception.addValidationError(new MessageValidationException.ValidationError(
+                        error.getField(), error.getCode(), error.getMessage(), error.getSeverity().toString()));
+                }
+                throw exception;
             }
         }
 

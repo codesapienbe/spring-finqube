@@ -123,17 +123,7 @@ public class MessageValidationException extends RuntimeException {
 
     @Override
     public String getMessage() {
-        StringBuilder sb = new StringBuilder(super.getMessage());
-        if (messageId != null) {
-            sb.append(" [Message ID: ").append(messageId).append("]");
-        }
-        if (messageType != null) {
-            sb.append(" [Message Type: ").append(messageType).append("]");
-        }
-        if (!validationErrors.isEmpty()) {
-            sb.append(" [Validation Errors: ").append(validationErrors.size()).append("]");
-        }
-        return sb.toString();
+        return super.getMessage();
     }
 
     /**

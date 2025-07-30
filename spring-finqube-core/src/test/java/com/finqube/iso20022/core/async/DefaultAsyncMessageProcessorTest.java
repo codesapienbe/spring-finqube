@@ -120,10 +120,9 @@ class DefaultAsyncMessageProcessorTest {
         // Given
         BaseMessage message = createValidMessage();
         ValidationResult validationResult = ValidationResult.success(message.getMessageId(), Instant.now(), 100);
-        TransportResponse transportResponse = createFailedTransportResponse();
 
         when(validator.validate(message)).thenReturn(validationResult);
-        when(template.send(message)).thenReturn("success");
+        when(template.send(message)).thenThrow(new RuntimeException("Transport failed"));
 
         // When
         CompletableFuture<ProcessingResult> future = processor.processAsync(message);
