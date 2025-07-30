@@ -114,6 +114,7 @@ public class SecurityException extends RuntimeException {
      */
     public enum SecurityErrorType {
         GENERAL("General", "General security error"),
+        INVALID_INPUT("Invalid Input", "Invalid input parameters"),
         ENCRYPTION("Encryption", "Encryption operation failed"),
         DECRYPTION("Decryption", "Decryption operation failed"),
         SIGNING("Signing", "Digital signing operation failed"),

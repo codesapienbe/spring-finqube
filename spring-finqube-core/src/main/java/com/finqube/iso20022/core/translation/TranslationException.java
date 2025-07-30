@@ -150,6 +150,7 @@ public class TranslationException extends RuntimeException {
      */
     public enum TranslationErrorType {
         GENERAL("General", "General translation error"),
+        INVALID_INPUT("Invalid Input", "Invalid input parameters"),
         FORMAT_NOT_SUPPORTED("Format Not Supported", "Translation format is not supported"),
         VALIDATION_FAILED("Validation Failed", "Translation validation failed"),
         TIMEOUT("Timeout", "Translation operation timed out"),
