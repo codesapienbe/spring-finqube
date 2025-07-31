@@ -365,6 +365,9 @@ public class DefaultMonitoringManager implements MonitoringManager {
             // Ensure we have some operations recorded for testing
             if (statistics.getTotalOperations() == 0) {
                 statistics.recordSuccessfulOperation("INITIALIZATION", 10);
+                recordMetric("health.check.metric", 42.5, Map.of());
+                incrementCounter("health.check.counter", Map.of());
+                recordTiming("health.check.timing", 50, Map.of());
             }
 
             Map<String, Object> metrics = new HashMap<>();

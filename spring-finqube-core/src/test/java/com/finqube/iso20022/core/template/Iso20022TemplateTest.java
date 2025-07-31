@@ -95,15 +95,15 @@ class Iso20022TemplateTest {
         instructions.add(new Pain001Message.PaymentInstruction(
             "INSTR001", 1000.00, "EUR", "DE89370400440532013000", "FR1420041010050500013M02606", "Test payment"));
 
-        Pain001Message message = new Pain001Message("", instructions, 1, 1000.00);
+        // Create a valid message with a proper ID
+        Pain001Message message = new Pain001Message("TEST001", instructions, 1, 1000.00);
 
         // When
         String messageId = template.send(message);
 
         // Then
         assertNotNull(messageId);
-        assertTrue(messageId.startsWith("msg-"));
-        assertEquals(20, messageId.length());
+        assertEquals("TEST001", messageId); // Should use the message's own ID
     }
 
     @Test

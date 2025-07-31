@@ -53,8 +53,9 @@ public class SpringFinqubeCommandLineRunner implements CommandLineRunner {
         logger.info("  - Validation enabled: {}", properties.getValidation().isEnabled());
         logger.info("  - Validation fail-fast: {}", properties.getValidation().isFailFast());
 
-        if (properties.getSecurity().getKeystore().getLocation() != null) {
-            logger.info("  - Keystore location: {}", properties.getSecurity().getKeystore().getLocation());
+        String keystoreLocation = properties.getSecurity().getKeystore().getLocation();
+        if (keystoreLocation != null && !keystoreLocation.trim().isEmpty()) {
+            logger.info("  - Keystore: Configured (location masked for security)");
             logger.info("  - Keystore type: {}", properties.getSecurity().getKeystore().getType());
         } else {
             logger.info("  - Keystore: Not configured");

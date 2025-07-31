@@ -99,7 +99,7 @@ class Pain001MessageTest {
     @Test
     @DisplayName("Should fail validation when payment instructions are null")
     void shouldFailValidationWhenPaymentInstructionsAreNull() {
-        Pain001Message invalidMessage = new Pain001Message("MSG001", null, 0, 0.0);
+        Pain001Message invalidMessage = new Pain001Message("MSG001", null, 1, 1000.00);
 
         MessageValidationException exception = assertThrows(MessageValidationException.class,
             () -> invalidMessage.validate());
@@ -110,7 +110,7 @@ class Pain001MessageTest {
     @Test
     @DisplayName("Should fail validation when payment instructions are empty")
     void shouldFailValidationWhenPaymentInstructionsAreEmpty() {
-        Pain001Message invalidMessage = new Pain001Message("MSG001", new ArrayList<>(), 0, 0.0);
+        Pain001Message invalidMessage = new Pain001Message("MSG001", new ArrayList<>(), 1, 1000.00);
 
         MessageValidationException exception = assertThrows(MessageValidationException.class,
             () -> invalidMessage.validate());

@@ -42,7 +42,6 @@ class Iso20022TemplateIntegrationTest {
     @Test
     void shouldNotAutowireIso20022TemplateWhenDisabled() {
         contextRunner
-                .withUserConfiguration(TestConfiguration.class)
                 .withPropertyValues("iso20022.enabled=false")
                 .run(context -> {
                     assertThat(context).doesNotHaveBean(Iso20022Template.class);

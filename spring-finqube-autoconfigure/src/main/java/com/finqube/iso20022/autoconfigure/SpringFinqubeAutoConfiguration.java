@@ -47,19 +47,7 @@ public class SpringFinqubeAutoConfiguration {
         return "Spring Finqube ISO 20022 Starter is ready! 🚀";
     }
 
-        /**
-     * Creates the ISO 20022 properties bean for configuration management.
-     *
-     * <p>This bean provides access to all ISO 20022 related configuration properties
-     * and ensures they are properly validated and bound.</p>
-     *
-     * @param properties the configuration properties
-     * @return the configured properties bean
-     */
-    @Bean
-    public SpringFinqubeProperties springFinqubeProperties(SpringFinqubeProperties properties) {
-        return properties;
-    }
+
 
     /**
      * Creates the Iso20022Template bean for message processing.

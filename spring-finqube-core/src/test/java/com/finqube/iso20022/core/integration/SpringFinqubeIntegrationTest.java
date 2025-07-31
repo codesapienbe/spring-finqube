@@ -13,26 +13,33 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.ActiveProfiles;
 
 import com.finqube.iso20022.core.async.AsyncMessageProcessor;
 import com.finqube.iso20022.core.async.ProcessingResult;
+import com.finqube.iso20022.core.async.impl.DefaultAsyncMessageProcessor;
 import com.finqube.iso20022.core.message.MessagePriority;
 import com.finqube.iso20022.core.message.pain.Pain001Message;
 import com.finqube.iso20022.core.monitoring.MonitoringManager;
 import com.finqube.iso20022.core.monitoring.SystemHealth;
+import com.finqube.iso20022.core.monitoring.impl.DefaultMonitoringManager;
 import com.finqube.iso20022.core.security.SecurityManager;
 import com.finqube.iso20022.core.security.SignedMessage;
+import com.finqube.iso20022.core.security.impl.DefaultSecurityManager;
 import com.finqube.iso20022.core.template.Iso20022Template;
 import com.finqube.iso20022.core.translation.TranslationManager;
 import com.finqube.iso20022.core.translation.TranslationOptions;
 import com.finqube.iso20022.core.translation.TranslationResult;
+import com.finqube.iso20022.core.translation.impl.DefaultTranslationManager;
 import com.finqube.iso20022.core.transport.Transport;
 import com.finqube.iso20022.core.transport.TransportFactory;
 import com.finqube.iso20022.core.transport.TransportResponse;
 import com.finqube.iso20022.core.transport.TransportStatus;
 import com.finqube.iso20022.core.validation.MessageValidator;
 import com.finqube.iso20022.core.validation.ValidationResult;
+import com.finqube.iso20022.core.validation.impl.SimpleMessageValidator;
 
 /**
  * Comprehensive integration tests for Spring Finqube ISO 20022 system.
@@ -44,10 +51,54 @@ import com.finqube.iso20022.core.validation.ValidationResult;
  * @version 0.1.0
  * @since 0.1.0
  */
-@SpringBootTest
+@SpringBootTest(classes = SpringFinqubeIntegrationTest.TestConfig.class)
 @ActiveProfiles("test")
 @DisplayName("Spring Finqube Integration Tests")
 class SpringFinqubeIntegrationTest {
+
+    @Configuration
+    static class TestConfig {
+        // Spring Boot test configuration
+        @Bean
+        public Iso20022Template iso20022Template() {
+            return new Iso20022Template();
+        }
+
+        @Bean
+        public MessageValidator messageValidator() {
+            return new SimpleMessageValidator();
+        }
+
+        @Bean
+        public AsyncMessageProcessor asyncMessageProcessor() {
+            return new DefaultAsyncMessageProcessor(
+                iso20022Template(),
+                transportFactory(),
+                messageValidator(),
+                2
+            );
+        }
+
+        @Bean
+        public SecurityManager securityManager() {
+            return new DefaultSecurityManager();
+        }
+
+        @Bean
+        public TranslationManager translationManager() {
+            return new DefaultTranslationManager();
+        }
+
+        @Bean
+        public TransportFactory transportFactory() {
+            return new TransportFactory();
+        }
+
+        @Bean
+        public MonitoringManager monitoringManager() {
+            return new DefaultMonitoringManager();
+        }
+    }
 
     @Autowired
     private Iso20022Template template;

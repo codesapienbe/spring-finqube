@@ -335,7 +335,7 @@ class SpringFinqubePropertiesValidatorTest {
 
         // Then
         assertThat(errors.hasErrors()).isTrue();
-        assertThat(errors.getErrorCount()).isEqualTo(3);
+        assertThat(errors.getErrorCount()).isEqualTo(4); // Fixed: 4 errors due to cross-property validation
         assertThat(errors.getFieldError("transportConfig.connectionTimeout")).isNotNull();
         assertThat(errors.getFieldError("transportConfig.readTimeout")).isNotNull();
         assertThat(errors.getFieldError("logging.level")).isNotNull();

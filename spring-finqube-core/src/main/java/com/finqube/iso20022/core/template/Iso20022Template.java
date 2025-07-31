@@ -53,7 +53,7 @@ public class Iso20022Template implements Iso20022TemplateOperations {
      * Constructs a new Iso20022Template with a unique identifier.
      */
     public Iso20022Template() {
-        this.templateId = "template-" + UUID.randomUUID().toString().substring(0, 8);
+        this.templateId = "template-" + UUID.randomUUID().toString().substring(0, 7);
         logger.info("Iso20022Template initialized with ID: {}", templateId);
     }
 
