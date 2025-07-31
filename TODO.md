@@ -178,9 +178,9 @@ Now that the core system is complete, here are additional tasks for extending an
 
 ## 🔧 **Advanced Message Types (Tasks 111-125)**
 
-111. Implement pain.002 (Payment Status Report) message support.
-112. Add pacs.002 (Payment Status Report) message handling.
-113. Create camt.052 (Account Report) message implementation.
+111. ✅ Implement pain.002 (Payment Status Report) message support.
+112. ✅ Add pacs.002 (Payment Status Report) message handling.
+113. ✅ Create camt.052 (Account Report) message implementation.
 114. Add camt.054 (Debit/Credit Notification) support.
 115. Implement pacs.004 (Payment Return) message processing.
 116. Add pacs.009 (Direct Debit) message support.
