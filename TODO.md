@@ -183,10 +183,10 @@ Now that the core system is complete, here are additional tasks for extending an
 113. ✅ Create camt.052 (Account Report) message implementation.
 114. ✅ Add camt.054 (Debit/Credit Notification) support.
 115. ✅ Implement pacs.004 (Payment Return) message processing.
-116. Add pacs.009 (Direct Debit) message support.
-117. Create pacs.010 (Direct Debit Mandate) implementation.
-118. Add pacs.011 (Direct Debit Mandate Amendment) support.
-119. Implement pacs.012 (Direct Debit Mandate Cancellation).
+116. ✅ Add pacs.009 (Direct Debit) message support.
+117. ✅ Create pacs.010 (Direct Debit Mandate) implementation.
+118. ✅ Add pacs.011 (Direct Debit Mandate Amendment) support.
+119. ✅ Implement pacs.012 (Direct Debit Mandate Cancellation).
 120. Add pacs.013 (Direct Debit Mandate Information) support.
 121. Create pacs.014 (Direct Debit Mandate Amendment Request).
 122. Add pacs.015 (Direct Debit Mandate Cancellation Request).
