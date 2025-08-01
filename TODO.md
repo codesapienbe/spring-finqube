@@ -187,12 +187,12 @@ Now that the core system is complete, here are additional tasks for extending an
 117. ✅ Create pacs.010 (Direct Debit Mandate) implementation.
 118. ✅ Add pacs.011 (Direct Debit Mandate Amendment) support.
 119. ✅ Implement pacs.012 (Direct Debit Mandate Cancellation).
-120. Add pacs.013 (Direct Debit Mandate Information) support.
-121. Create pacs.014 (Direct Debit Mandate Amendment Request).
-122. Add pacs.015 (Direct Debit Mandate Cancellation Request).
-123. Implement pacs.016 (Direct Debit Mandate Information Request).
-124. Add pacs.017 (Direct Debit Mandate Amendment Response).
-125. Create pacs.018 (Direct Debit Mandate Cancellation Response).
+120. ✅ Add pacs.013 (Direct Debit Mandate Information) support.
+121. ✅ Create pacs.014 (Direct Debit Mandate Amendment Request).
+122. ✅ Add pacs.015 (Direct Debit Mandate Cancellation Request).
+123. ✅ Implement pacs.016 (Direct Debit Mandate Information Request).
+124. ✅ Add pacs.017 (Direct Debit Mandate Amendment Response).
+125. ✅ Create pacs.018 (Direct Debit Mandate Cancellation Response).
 
 ## 🔐 **Advanced Security Features (Tasks 126-140)**
 
