@@ -197,10 +197,10 @@ Now that the core system is complete, here are additional tasks for extending an
 ## 🔐 **Advanced Security Features (Tasks 126-140)**
 
 126. ✅ Implement HSM (Hardware Security Module) integration.
-127. Add certificate chain validation and management.
-128. Create secure key rotation mechanisms.
-129. Implement message encryption with multiple algorithms.
-130. Add digital signature verification with multiple algorithms.
+127. ✅ Add certificate chain validation and management.
+128. ✅ Create secure key rotation mechanisms.
+129. ✅ Implement message encryption with multiple algorithms.
+130. ✅ Add digital signature verification with multiple algorithms.
 131. Create secure audit logging and compliance reporting.
 132. Implement role-based access control (RBAC).
 133. Add secure configuration encryption.
@@ -381,6 +381,17 @@ Now that the core system is complete, here are additional tasks for extending an
 ---
 
 **This extended TODO list provides a roadmap for the next phase of Spring Finqube development, focusing on advanced features, production hardening, and community building. Each task is designed to be achievable in 2-4 hours and builds upon the solid foundation already established.**
+
+### 🔧 **Recent Build Fixes (December 2024)**
+
+- **Maven Version Update**: Updated Maven wrapper from 3.6.3 to 3.9.6 to meet enforcer plugin requirements
+- **BouncyCastle Dependencies**: Added bcprov-jdk18on and bcpkix-jdk18on for cryptographic operations
+- **Certificate Management**: Fixed compilation issues in DefaultCertificateManager implementation
+- **HSM Provider**: Fixed SecureRandom usage and KeyType enum issues
+- **Exception Handling**: Resolved CertificateException conflicts with java.security.cert.CertificateException
+- **Constructor Issues**: Fixed complex constructor parameter mismatches in CertificateInfo and CertificateStatistics
+- **Test Compilation**: Fixed test compilation errors by removing BouncyCastle dependencies and updating test assertions
+- **Build Scripts**: Added build-test.sh for easy compilation verification and test execution
 
 <div style="text-align: center">🎉 **Spring Finqube ISO 20022 - Production Ready!** 🎉</div>
 

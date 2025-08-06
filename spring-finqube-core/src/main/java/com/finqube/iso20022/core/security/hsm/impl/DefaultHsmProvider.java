@@ -44,7 +44,7 @@ public class DefaultHsmProvider implements HsmProvider {
 
     private ConnectionStatus connectionStatus = ConnectionStatus.DISCONNECTED;
     private final LocalDateTime startTime = LocalDateTime.now();
-    private final Random secureRandom = new SecureRandom();
+    private final SecureRandom secureRandom = new SecureRandom();
 
     @Override
     public boolean initialize() throws HsmException {
@@ -622,7 +622,7 @@ public class DefaultHsmProvider implements HsmProvider {
         } else if ("HmacSHA256".equals(algorithm) || "HmacSHA512".equals(algorithm)) {
             return KeyType.HMAC;
         } else {
-            return KeyType.OTHER;
+            return KeyType.RSA; // Default to RSA for unknown algorithms
         }
     }
 
