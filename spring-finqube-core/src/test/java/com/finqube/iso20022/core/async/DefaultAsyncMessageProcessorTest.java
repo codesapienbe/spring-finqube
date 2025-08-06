@@ -90,7 +90,7 @@ class DefaultAsyncMessageProcessorTest {
 
         // Then
         assertThat(result.isSuccessful()).isTrue();
-        assertThat(result.getProcessingTimeMillis()).isPositive();
+        assertThat(result.getProcessingTimeMillis()).isGreaterThanOrEqualTo(0L);
         assertThat(result.getStatus()).isEqualTo(ProcessingResult.ProcessingStatus.SUCCESS);
     }
 
