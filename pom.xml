@@ -40,6 +40,9 @@
         <!-- ISO 20022 specific -->
         <jaxb-api.version>4.0.0</jaxb-api.version>
         <prowide-iso20022.version>9.3.0</prowide-iso20022.version>
+
+        <!-- OpenTelemetry -->
+        <opentelemetry.version>1.32.0</opentelemetry.version>
     </properties>
 
     <modules>
@@ -80,6 +83,18 @@
                 <groupId>com.prowidesoftware</groupId>
                 <artifactId>prowide-iso20022</artifactId>
                 <version>${prowide-iso20022.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>io.opentelemetry</groupId>
+                <artifactId>opentelemetry-exporter-otlp</artifactId>
+                <version>${opentelemetry.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>io.opentelemetry.semconv</groupId>
+                <artifactId>opentelemetry-semconv</artifactId>
+                <version>1.21.0-alpha</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
