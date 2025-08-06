@@ -121,7 +121,8 @@ public class SecurityException extends RuntimeException {
         VERIFICATION("Verification", "Signature verification failed"),
         CERTIFICATE("Certificate", "Certificate-related error"),
         KEY_MANAGEMENT("Key Management", "Key management error"),
-        ALGORITHM("Algorithm", "Cryptographic algorithm error");
+        ALGORITHM("Algorithm", "Cryptographic algorithm error"),
+        ACCESS_CONTROL("Access Control", "Access control violation");
 
         private final String displayName;
         private final String description;

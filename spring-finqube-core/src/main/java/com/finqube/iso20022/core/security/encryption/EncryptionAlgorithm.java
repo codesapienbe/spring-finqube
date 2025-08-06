@@ -7,6 +7,7 @@ package com.finqube.iso20022.core.security.encryption;
  */
 public enum EncryptionAlgorithm {
     AES,
+    AES_256_GCM,
     RSA,
     CHACHA20,
     ECIES
