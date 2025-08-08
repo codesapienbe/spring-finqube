@@ -2,6 +2,7 @@
 <!DOCTYPE module PUBLIC "-//Google Inc.//DTD Google Web Toolkit 2.8.0//EN" "http://gwtproject.org/doctype/2.8.0/gwt-module.dtd">
 <module rename-to='admindashboard'>
     <inherits name='com.google.gwt.user.User'/>
+    <inherits name='com.google.gwt.json.JSON'/>
 
     <!-- Entry point -->
     <entry-point class='com.finqube.iso20022.admin.gwt.client.AdminDashboard'/>
