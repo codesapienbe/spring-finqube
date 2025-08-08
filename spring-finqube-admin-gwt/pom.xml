@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.finqube</groupId>
+        <artifactId>spring-finqube</artifactId>
+        <version>0.1.0-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>spring-finqube-admin-gwt</artifactId>
+    <name>Spring Finqube Admin Dashboard (GWT)</name>
+    <description>GWT-based admin dashboard shell served by Spring Boot</description>
+
+    <properties>
+        <java.version>21</java.version>
+        <gwt.version>2.10.0</gwt.version>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+
+        <!-- GWT API for compiling EntryPoint (JS compilation is optional via profile) -->
+        <dependency>
+            <groupId>com.google.gwt</groupId>
+            <artifactId>gwt-user</artifactId>
+            <version>${gwt.version}</version>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
+
+    <profiles>
+        <profile>
+            <id>gwt</id>
+            <build>
+                <plugins>
+                    <!-- Optional: activate with -Pgwt to compile the GWT module to JS -->
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>gwt-maven-plugin</artifactId>
+                        <version>2.9.0</version>
+                        <configuration>
+                            <gwtVersion>${gwt.version}</gwtVersion>
+                            <moduleName>com.finqube.iso20022.admin.gwt.AdminDashboard</moduleName>
+                            <webappDirectory>${project.build.outputDirectory}/static</webappDirectory>
+                            <draftCompile>true</draftCompile>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <goals>
+                                    <goal>compile</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+</project>

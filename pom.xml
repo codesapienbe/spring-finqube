@@ -49,6 +49,8 @@
         <module>spring-finqube-core</module>
         <module>spring-finqube-autoconfigure</module>
         <module>spring-finqube-starter</module>
+       <!-- <module>spring-finqube-admin</module> -->
+        <module>spring-finqube-admin-gwt</module>
     </modules>
 
     <dependencyManagement>

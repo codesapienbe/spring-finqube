@@ -1,0 +1,62 @@
+# Spring Finqube Admin Dashboard Configuration
+spring:
+  application:
+    name: spring-finqube-admin
+
+server:
+  port: 8080
+  servlet:
+    context-path: /admin
+
+vaadin:
+  production-mode: false
+  whitelisted-packages:
+    - com.finqube.iso20022.admin
+    - com.finqube.iso20022.core
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+      base-path: /actuator
+  endpoint:
+    health:
+      show-details: when-authorized
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+
+logging:
+  level:
+    com.finqube.iso20022: INFO
+    com.vaadin: WARN
+    org.springframework.web: INFO
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+  file:
+    name: logs/spring-finqube-admin.log
+
+# Application-specific configuration
+finqube:
+  admin:
+    # Dashboard refresh interval in seconds
+    refresh-interval: 30
+    # Real-time updates enabled
+    real-time-updates: true
+    # Security configuration
+    security:
+      # Enable basic authentication
+      basic-auth-enabled: true
+      # Session timeout in minutes
+      session-timeout: 30
+    # Monitoring configuration
+    monitoring:
+      # Enable system health monitoring
+      system-health-enabled: true
+      # Enable message monitoring
+      message-monitoring-enabled: true
+      # Metrics collection interval in seconds
+      metrics-interval: 30
