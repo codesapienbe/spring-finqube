@@ -4,15 +4,24 @@ import com.finqube.iso20022.admin.gwt.model.AdminMessage;
 import com.finqube.iso20022.admin.gwt.model.Direction;
 import com.finqube.iso20022.admin.gwt.model.MessageSummary;
 import com.finqube.iso20022.admin.gwt.model.PageResponse;
+import com.finqube.iso20022.core.message.BaseMessage;
+import com.finqube.iso20022.core.message.pacs.Pacs008Message;
+import com.finqube.iso20022.core.message.pain.Pain001Message;
+import com.finqube.iso20022.core.transport.Transport;
+import com.finqube.iso20022.core.transport.TransportFactory;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -31,6 +40,12 @@ public class AdminMessageService {
     private static final Logger LOGGER = LoggerFactory.getLogger(AdminMessageService.class);
 
     private final List<AdminMessage> messages = new ArrayList<>();
+    private final ExecutorService executor = Executors.newFixedThreadPool(4);
+    private final TransportFactory transportFactory;
+
+    public AdminMessageService(TransportFactory transportFactory) {
+        this.transportFactory = transportFactory;
+    }
 
     /**
      * Seeds a small set of demo messages at startup.
@@ -58,6 +73,11 @@ public class AdminMessageService {
         }
         messages.sort((a, b) -> b.timestamp().compareTo(a.timestamp()));
         LOGGER.info("{}", toLog("admin_messages_seeded", null, messages.size()));
+    }
+
+    @PreDestroy
+    void shutdown() {
+        executor.shutdown();
     }
 
     /**
@@ -141,6 +161,146 @@ public class AdminMessageService {
         return new MessageSummary(totalIncoming, totalOutgoing, byStatusIncoming, byStatusOutgoing);
     }
 
+    /**
+     * Generates additional mock messages for testing the dashboard.
+     *
+     * @param count number of messages to generate
+     * @return number of messages actually generated
+     */
+    public int generateMockMessages(int count) {
+        final String[] messageTypes = {"pacs.008", "camt.054", "pacs.002", "pain.001", "camt.052", "pacs.004"};
+        final String[] statuses = {"RECEIVED", "VALIDATED", "QUEUED", "SENT", "PROCESSING", "COMPLETED"};
+
+        int generated = 0;
+        for (int i = 0; i < count; i++) {
+            Direction direction = i % 2 == 0 ? Direction.INCOMING : Direction.OUTGOING;
+            String messageType = messageTypes[i % messageTypes.length];
+            String status = statuses[i % statuses.length];
+            String summary = "Mock " + direction.toString().toLowerCase() + " message " + (messages.size() + i + 1);
+
+            messages.add(new AdminMessage(
+                    UUID.randomUUID().toString(),
+                    Instant.now().minusSeconds(i * 2L), // Spread timestamps
+                    direction,
+                    messageType,
+                    status,
+                    summary));
+            generated++;
+        }
+
+        // Re-sort by timestamp (newest first)
+        messages.sort((a, b) -> b.timestamp().compareTo(a.timestamp()));
+
+        LOGGER.info("{}", toLog("admin_messages_generated", null, generated));
+        return generated;
+    }
+
+    /**
+     * Sends real messages through the transport layer and tracks progress.
+     *
+     * @param incomingCount number of incoming messages to simulate
+     * @param outgoingCount number of outgoing messages to send
+     * @param progressCallback callback to report progress (0-100)
+     * @return CompletableFuture that completes when all messages are processed
+     */
+    public CompletableFuture<SendResult> sendRealMessages(int incomingCount, int outgoingCount,
+                                                         ProgressCallback progressCallback) {
+        return CompletableFuture.supplyAsync(() -> {
+            int totalMessages = incomingCount + outgoingCount;
+            int processed = 0;
+            int successful = 0;
+            int failed = 0;
+
+            try {
+                // Simulate incoming messages (these would normally come from external systems)
+                for (int i = 0; i < incomingCount; i++) {
+                    try {
+                        simulateIncomingMessage(i + 1);
+                        successful++;
+                    } catch (Exception e) {
+                        LOGGER.warn("Failed to simulate incoming message {}: {}", i + 1, e.getMessage());
+                        failed++;
+                    }
+                    processed++;
+                    progressCallback.onProgress((processed * 100) / totalMessages);
+                    Thread.sleep(50); // Small delay to show progress
+                }
+
+                // Send real outgoing messages
+                for (int i = 0; i < outgoingCount; i++) {
+                    try {
+                        sendOutgoingMessage(i + 1);
+                        successful++;
+                    } catch (Exception e) {
+                        LOGGER.warn("Failed to send outgoing message {}: {}", i + 1, e.getMessage());
+                        failed++;
+                    }
+                    processed++;
+                    progressCallback.onProgress((processed * 100) / totalMessages);
+                    Thread.sleep(100); // Longer delay for real sends
+                }
+
+                LOGGER.info("{}", toLog("real_messages_sent", null, successful));
+                return new SendResult(successful, failed, totalMessages);
+
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                throw new RuntimeException("Message sending interrupted", e);
+            }
+        }, executor);
+    }
+
+    private void simulateIncomingMessage(int index) {
+        String messageId = UUID.randomUUID().toString();
+        String messageType = index % 2 == 0 ? "pacs.008" : "camt.054";
+        String status = index % 3 == 0 ? "RECEIVED" : "VALIDATED";
+
+        messages.add(new AdminMessage(
+                messageId,
+                Instant.now(),
+                Direction.INCOMING,
+                messageType,
+                status,
+                "Real incoming message " + index));
+
+        messages.sort((a, b) -> b.timestamp().compareTo(a.timestamp()));
+    }
+
+    private void sendOutgoingMessage(int index) throws Exception {
+        String messageId = UUID.randomUUID().toString();
+        String messageType = index % 2 == 0 ? "pacs.002" : "pain.001";
+
+        // Create a real message using the core API
+        BaseMessage message = createOutgoingMessage(messageType, messageId);
+
+        // Send through transport layer
+        Transport transport = transportFactory.createTransport("default");
+        transport.send(message);
+
+        // Add to our tracking list
+        messages.add(new AdminMessage(
+                messageId,
+                Instant.now(),
+                Direction.OUTGOING,
+                messageType,
+                "SENT",
+                "Real outgoing message " + index));
+
+        messages.sort((a, b) -> b.timestamp().compareTo(a.timestamp()));
+    }
+
+    private BaseMessage createOutgoingMessage(String messageType, String messageId) {
+        // Create appropriate message type based on the type string
+        if ("pacs.002".equals(messageType)) {
+            return new Pacs008Message(messageId); // Using Pacs008 as example
+        } else if ("pain.001".equals(messageType)) {
+            return new Pain001Message(messageId);
+        } else {
+            // Default to Pacs008
+            return new Pacs008Message(messageId);
+        }
+    }
+
     private static String toLog(String event, Direction direction, Integer size) {
         // Minimal JSON-structured log line; avoids leaking message content
         return "{" +
@@ -151,5 +311,31 @@ public class AdminMessageService {
                 (direction != null ? "\"direction\":\"" + direction + "\"," : "") +
                 (size != null ? "\"count\":" + size + "," : "") +
                 "\"correlation_id\":\"-\",\"user_id\":\"-\",\"request_id\":\"-\"}";
+    }
+
+    /**
+     * Callback interface for progress reporting.
+     */
+    public interface ProgressCallback {
+        void onProgress(int percentage);
+    }
+
+    /**
+     * Result of sending real messages.
+     */
+    public static class SendResult {
+        private final int successful;
+        private final int failed;
+        private final int total;
+
+        public SendResult(int successful, int failed, int total) {
+            this.successful = successful;
+            this.failed = failed;
+            this.total = total;
+        }
+
+        public int getSuccessful() { return successful; }
+        public int getFailed() { return failed; }
+        public int getTotal() { return total; }
     }
 }

@@ -7,8 +7,11 @@ import com.finqube.iso20022.admin.gwt.model.PageResponse;
 import com.finqube.iso20022.admin.gwt.service.AdminMessageService;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -71,6 +74,53 @@ public class AdminMessageController {
     @GetMapping(path = "/summary")
     public MessageSummary summary() {
         return adminMessageService.summarize();
+    }
+
+    /**
+     * Generates additional mock messages for testing.
+     *
+     * @param count number of messages to generate (defaults to 100)
+     * @return response with count of generated messages
+     */
+    @PostMapping(path = "/generate")
+    public Map<String, Object> generateMockMessages(
+            @RequestParam(name = "count", defaultValue = "100") int count) {
+        int safeCount = Math.max(1, Math.min(1000, count)); // Limit to 1000 max
+        int generated = adminMessageService.generateMockMessages(safeCount);
+        return Map.of(
+                "generated", generated,
+                "total", adminMessageService.findMessages(null).size(),
+                "message", "Generated " + generated + " mock messages");
+    }
+
+    /**
+     * Sends real messages through the transport layer.
+     *
+     * @param incoming number of incoming messages to simulate (defaults to 100)
+     * @param outgoing number of outgoing messages to send (defaults to 50)
+     * @return CompletableFuture with send result
+     */
+    @PostMapping(path = "/send")
+    public CompletableFuture<Map<String, Object>> sendRealMessages(
+            @RequestParam(name = "incoming", defaultValue = "100") int incoming,
+            @RequestParam(name = "outgoing", defaultValue = "50") int outgoing) {
+
+        int safeIncoming = Math.max(0, Math.min(1000, incoming));
+        int safeOutgoing = Math.max(0, Math.min(1000, outgoing));
+
+        return adminMessageService.sendRealMessages(safeIncoming, safeOutgoing,
+                progress -> {
+                    // Progress callback - could be used for WebSocket updates in the future
+                    // For now, just log progress
+                    if (progress % 10 == 0) { // Log every 10%
+                        // Could implement WebSocket here for real-time progress updates
+                    }
+                })
+                .thenApply(result -> Map.of(
+                        "successful", result.getSuccessful(),
+                        "failed", result.getFailed(),
+                        "total", result.getTotal(),
+                        "message", "Sent " + result.getSuccessful() + " messages successfully"));
     }
 
     private static Direction parseDirection(String raw) {

@@ -51,6 +51,11 @@ public final class AdminDashboard implements EntryPoint {
 
     private Grid summaryGrid;
 
+    // Real message sending widgets
+    private Label sendProgressLabel;
+    private Label sendStatusLabel;
+    private Button sendRealMessagesButton;
+
     @Override
     public void onModuleLoad() {
         RootPanel rootPanel = RootPanel.get();
@@ -82,6 +87,9 @@ public final class AdminDashboard implements EntryPoint {
             fetchOverviewPage();
             fetchSummary();
         });
+        Button generateMessages = new Button("Generate 100 Messages", (ClickHandler) c -> {
+            generateMessages();
+        });
         filters.add(new Label("Direction:"));
         filters.add(directionList);
         filters.add(new Label("Status:"));
@@ -93,6 +101,19 @@ public final class AdminDashboard implements EntryPoint {
         filters.add(new Label("Size:"));
         filters.add(sizeList);
         filters.add(applyFilters);
+        filters.add(generateMessages);
+
+        // Real message sending section
+        HorizontalPanel sendPanel = new HorizontalPanel();
+        sendPanel.setSpacing(8);
+        sendRealMessagesButton = new Button("Send Real Messages (100 incoming, 50 outgoing)", (ClickHandler) c -> {
+            sendRealMessages();
+        });
+        sendProgressLabel = new Label("Ready");
+        sendStatusLabel = new Label("Ready to send real messages");
+        sendPanel.add(sendRealMessagesButton);
+        sendPanel.add(sendProgressLabel);
+        sendPanel.add(sendStatusLabel);
 
         overviewStatus = new Label();
         overviewTable = createTable();
@@ -121,6 +142,7 @@ public final class AdminDashboard implements EntryPoint {
         // status maps will be shown as simple counts appended
 
         overviewPanel.add(filters);
+        overviewPanel.add(sendPanel);
         overviewPanel.add(overviewStatus);
         overviewPanel.add(overviewTable);
         overviewPanel.add(pager);
@@ -170,6 +192,87 @@ public final class AdminDashboard implements EntryPoint {
         table.setText(0, 2, "Status");
         table.setText(0, 3, "Summary");
         return table;
+    }
+
+    private void sendRealMessages() {
+        sendRealMessagesButton.setEnabled(false);
+        sendProgressLabel.setText("Sending...");
+        sendStatusLabel.setText("Sending real messages...");
+
+        RequestBuilder builder = new RequestBuilder(RequestBuilder.POST,
+                API_BASE + "/send?incoming=100&outgoing=50");
+        try {
+            builder.sendRequest(null, new RequestCallback() {
+                @Override
+                public void onResponseReceived(Request request, Response response) {
+                    if (response.getStatusCode() == 200) {
+                        try {
+                            JSONObject result = JSONParser.parseStrict(response.getText()).isObject();
+                            if (result != null) {
+                                JSONNumber successful = result.get("successful").isNumber();
+                                JSONNumber failed = result.get("failed").isNumber();
+                                JSONString message = result.get("message").isString();
+
+                                                                sendProgressLabel.setText("Complete");
+                                sendStatusLabel.setText(message != null ? message.stringValue() :
+                                    "Sent " + (successful != null ? (int) successful.doubleValue() : 0) +
+                                    " messages successfully");
+
+                                // Refresh data to show new messages
+                                currentPage = 0;
+                                fetchOverviewPage();
+                                fetchSummary();
+                            }
+                        } catch (Exception e) {
+                            sendStatusLabel.setText("Error parsing response: " + e.getMessage());
+                        }
+                    } else {
+                        sendStatusLabel.setText("Error sending messages: " + response.getStatusCode());
+                    }
+                    sendRealMessagesButton.setEnabled(true);
+                    sendProgressLabel.setText("Ready");
+                }
+
+                @Override
+                public void onError(Request request, Throwable exception) {
+                    sendStatusLabel.setText("Error sending messages: " + exception.getMessage());
+                    sendRealMessagesButton.setEnabled(true);
+                    sendProgressLabel.setText("Ready");
+                }
+            });
+        } catch (Exception e) {
+            sendStatusLabel.setText("Request error: " + e.getMessage());
+            sendRealMessagesButton.setEnabled(true);
+            sendProgressLabel.setText("Ready");
+        }
+    }
+
+    private void generateMessages() {
+        overviewStatus.setText("Generating 100 mock messages...");
+        RequestBuilder builder = new RequestBuilder(RequestBuilder.POST, API_BASE + "/generate?count=100");
+        try {
+            builder.sendRequest(null, new RequestCallback() {
+                @Override
+                public void onResponseReceived(Request request, Response response) {
+                    if (response.getStatusCode() == 200) {
+                        overviewStatus.setText("Generated 100 messages successfully");
+                        // Refresh data
+                        currentPage = 0;
+                        fetchOverviewPage();
+                        fetchSummary();
+                    } else {
+                        overviewStatus.setText("Error generating messages: " + response.getStatusCode());
+                    }
+                }
+
+                @Override
+                public void onError(Request request, Throwable exception) {
+                    overviewStatus.setText("Error generating messages: " + exception.getMessage());
+                }
+            });
+        } catch (Exception e) {
+            overviewStatus.setText("Request error: " + e.getMessage());
+        }
     }
 
     private void fetchOverviewPage() {
