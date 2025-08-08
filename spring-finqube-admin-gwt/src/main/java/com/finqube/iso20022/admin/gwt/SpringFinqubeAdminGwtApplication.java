@@ -7,8 +7,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * Spring Boot application entry point for the GWT-based Admin Dashboard module.
  *
  * <p>This module provides a minimal shell to serve a GWT application host page
- * over Spring Boot's embedded server. The intent is to incrementally port
- * Vaadin views to GWT without impacting the existing Vaadin-based admin module.</p>
+ * over Spring Boot's embedded server.</p>
  *
  * <p>Static assets (including the GWT host page and compiled JS) are served from
  * {@code src/main/resources/static}.</p>

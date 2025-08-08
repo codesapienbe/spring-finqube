@@ -50,7 +50,6 @@
          <module>spring-finqube-autoconfigure</module>
          <module>spring-finqube-starter</module>
          <module>spring-finqube-examples</module>
-        <!-- <module>spring-finqube-admin</module> -->
          <module>spring-finqube-admin-gwt</module>
      </modules>
 
