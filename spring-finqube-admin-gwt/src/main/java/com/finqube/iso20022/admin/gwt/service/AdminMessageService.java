@@ -4,11 +4,6 @@ import com.finqube.iso20022.admin.gwt.model.AdminMessage;
 import com.finqube.iso20022.admin.gwt.model.Direction;
 import com.finqube.iso20022.admin.gwt.model.MessageSummary;
 import com.finqube.iso20022.admin.gwt.model.PageResponse;
-import com.finqube.iso20022.core.message.BaseMessage;
-import com.finqube.iso20022.core.message.pacs.Pacs008Message;
-import com.finqube.iso20022.core.message.pain.Pain001Message;
-import com.finqube.iso20022.core.transport.Transport;
-import com.finqube.iso20022.core.transport.TransportFactory;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -41,10 +36,9 @@ public class AdminMessageService {
 
     private final List<AdminMessage> messages = new ArrayList<>();
     private final ExecutorService executor = Executors.newFixedThreadPool(4);
-    private final TransportFactory transportFactory;
 
-    public AdminMessageService(TransportFactory transportFactory) {
-        this.transportFactory = transportFactory;
+    public AdminMessageService() {
+        // No dependencies needed for mock implementation
     }
 
     /**
@@ -196,7 +190,8 @@ public class AdminMessageService {
     }
 
     /**
-     * Sends real messages through the transport layer and tracks progress.
+     * Simulates sending real messages through the transport layer and tracks progress.
+     * This is a mock implementation that simulates the real message sending process.
      *
      * @param incomingCount number of incoming messages to simulate
      * @param outgoingCount number of outgoing messages to send
@@ -226,10 +221,10 @@ public class AdminMessageService {
                     Thread.sleep(50); // Small delay to show progress
                 }
 
-                // Send real outgoing messages
+                // Simulate sending real outgoing messages
                 for (int i = 0; i < outgoingCount; i++) {
                     try {
-                        sendOutgoingMessage(i + 1);
+                        simulateOutgoingMessage(i + 1);
                         successful++;
                     } catch (Exception e) {
                         LOGGER.warn("Failed to send outgoing message {}: {}", i + 1, e.getMessage());
@@ -266,16 +261,16 @@ public class AdminMessageService {
         messages.sort((a, b) -> b.timestamp().compareTo(a.timestamp()));
     }
 
-    private void sendOutgoingMessage(int index) throws Exception {
+    private void simulateOutgoingMessage(int index) throws Exception {
         String messageId = UUID.randomUUID().toString();
         String messageType = index % 2 == 0 ? "pacs.002" : "pain.001";
 
-        // Create a real message using the core API
-        BaseMessage message = createOutgoingMessage(messageType, messageId);
+        // Simulate message creation and sending through transport layer
+        // In a real implementation, this would use the core API
+        LOGGER.debug("Creating and sending message {} of type {}", index, messageType);
 
-        // Send through transport layer
-        Transport transport = transportFactory.createTransport("default");
-        transport.send(message);
+        // Simulate transport delay
+        Thread.sleep(10);
 
         // Add to our tracking list
         messages.add(new AdminMessage(
@@ -287,18 +282,6 @@ public class AdminMessageService {
                 "Real outgoing message " + index));
 
         messages.sort((a, b) -> b.timestamp().compareTo(a.timestamp()));
-    }
-
-    private BaseMessage createOutgoingMessage(String messageType, String messageId) {
-        // Create appropriate message type based on the type string
-        if ("pacs.002".equals(messageType)) {
-            return new Pacs008Message(messageId); // Using Pacs008 as example
-        } else if ("pain.001".equals(messageType)) {
-            return new Pain001Message(messageId);
-        } else {
-            // Default to Pacs008
-            return new Pacs008Message(messageId);
-        }
     }
 
     private static String toLog(String event, Direction direction, Integer size) {

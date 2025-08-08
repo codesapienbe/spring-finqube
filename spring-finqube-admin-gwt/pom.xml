@@ -25,6 +25,13 @@
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
 
+        <!-- Core module dependency for message types and transport -->
+        <dependency>
+            <groupId>com.finqube</groupId>
+            <artifactId>spring-finqube-core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
         <!-- GWT API for compiling EntryPoint (JS compilation is optional via profile) -->
         <dependency>
             <groupId>com.google.gwt</groupId>
