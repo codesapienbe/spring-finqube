@@ -53,10 +53,12 @@
                         <artifactId>gwt-maven-plugin</artifactId>
                         <version>2.9.0</version>
                         <configuration>
-                            <gwtVersion>${gwt.version}</gwtVersion>
-                            <moduleName>com.finqube.iso20022.admin.gwt.AdminDashboard</moduleName>
+                            <modules>
+                                <module>com.finqube.iso20022.admin.gwt.AdminDashboard</module>
+                            </modules>
                             <webappDirectory>${project.build.outputDirectory}/static</webappDirectory>
                             <draftCompile>true</draftCompile>
+                            <sourceLevel>1.11</sourceLevel>
                         </configuration>
                         <executions>
                             <execution>
