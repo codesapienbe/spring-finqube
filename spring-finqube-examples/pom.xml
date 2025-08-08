@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.finqube</groupId>
+        <artifactId>spring-finqube</artifactId>
+        <version>0.1.0-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>spring-finqube-examples</artifactId>
+    <name>Spring Finqube Examples</name>
+    <description>Examples showcasing usage with Picocli, GWT, and JavaFX</description>
+
+    <dependencies>
+        <!-- Bring in Spring Finqube starter (autoconfigure + core) for examples that use it -->
+        <dependency>
+            <groupId>com.finqube</groupId>
+            <artifactId>spring-finqube-starter</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <!-- Picocli for CLI example -->
+        <dependency>
+            <groupId>info.picocli</groupId>
+            <artifactId>picocli</artifactId>
+            <version>4.7.5</version>
+        </dependency>
+
+        <!-- JavaFX for desktop example (compile-time); runtime natives are platform provided -->
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-controls</artifactId>
+            <version>21.0.3</version>
+        </dependency>
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-graphics</artifactId>
+            <version>21.0.3</version>
+        </dependency>
+
+        <!-- GWT APIs for the web example (provided; compiled by GWT compiler when used) -->
+        <dependency>
+            <groupId>com.google.gwt</groupId>
+            <artifactId>gwt-user</artifactId>
+            <version>2.10.0</version>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <includes>
+                        <include>com/finqube/iso20022/examples/cli/**</include>
+                        <include>com/finqube/iso20022/examples/fx/**</include>
+                        <include>com/finqube/iso20022/examples/gwt/**</include>
+                    </includes>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>

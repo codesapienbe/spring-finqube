@@ -45,13 +45,14 @@
         <opentelemetry.version>1.32.0</opentelemetry.version>
     </properties>
 
-    <modules>
-        <module>spring-finqube-core</module>
-        <module>spring-finqube-autoconfigure</module>
-        <module>spring-finqube-starter</module>
-       <!-- <module>spring-finqube-admin</module> -->
-        <module>spring-finqube-admin-gwt</module>
-    </modules>
+         <modules>
+         <module>spring-finqube-core</module>
+         <module>spring-finqube-autoconfigure</module>
+         <module>spring-finqube-starter</module>
+         <module>spring-finqube-examples</module>
+        <!-- <module>spring-finqube-admin</module> -->
+         <module>spring-finqube-admin-gwt</module>
+     </modules>
 
     <dependencyManagement>
         <dependencies>
